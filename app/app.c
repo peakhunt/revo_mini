@@ -8,6 +8,7 @@
 
 #include "mainloop_timer.h"
 #include "blinky.h"
+#include "pwm.h"
 
 void
 app_init_f(void)
@@ -29,6 +30,7 @@ app_init(void)
 void
 app_start(void)
 {
+  pwm_start();
 }
 
 void

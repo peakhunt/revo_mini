@@ -81,7 +81,8 @@ app/shell_if_usb.c \
 app/circ_buffer.c \
 app/soft_timer.c \
 app/mainloop_timer.c \
-app/blinky.c
+app/blinky.c \
+app/pwm.c
 
 APP_INCLUDES = \
 -Iapp

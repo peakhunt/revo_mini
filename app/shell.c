@@ -9,6 +9,7 @@
 #include "app_common.h"
 #include "shell.h"
 #include "shell_if_usb.h"
+#include "pwm.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -38,6 +39,7 @@ typedef struct
 static void shell_command_help(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_version(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_uptime(ShellIntf* intf, int argc, const char** argv);
+static void shell_command_pwm(ShellIntf* intf, int argc, const char** argv);
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -67,6 +69,11 @@ static ShellCommand     _commands[] =
     "uptime",
     "show system uptime",
     shell_command_uptime,
+  },
+  {
+    "pwm",
+    "set pwm out duty cycle",
+    shell_command_pwm,
   },
 };
 
@@ -112,6 +119,46 @@ shell_command_uptime(ShellIntf* intf, int argc, const char** argv)
 {
   shell_printf(intf, "\r\n");
   shell_printf(intf, "System Uptime: %lu\r\n", __uptime);
+}
+
+static void
+shell_command_pwm(ShellIntf* intf, int argc, const char** argv)
+{
+  static const pwm_channel_enum_t   chnl_map[] = 
+  {
+    pwm_channel_0,
+    pwm_channel_1,
+    pwm_channel_2,
+    pwm_channel_3,
+    pwm_channel_4,
+    pwm_channel_5,
+  };
+  uint16_t    duty;
+  uint8_t     i;
+
+  if(argc != 3)
+  {
+    shell_printf(intf, "Syntax error %s chnl duty\r\n", argv[0]);
+    return;
+  }
+
+  i = atoi(argv[1]);
+  duty = atoi(argv[2]);
+
+  if(i >= sizeof(chnl_map)/sizeof(pwm_channel_enum_t))
+  {
+    shell_printf(intf, "invalid channel number %s\r\n", argv[1]);
+    return;
+  }
+
+  if(duty < PWM_OUT_MIN_DUTY_CYCLE || duty > PWM_OUT_MAX_DUTY_CYCLE)
+  {
+    shell_printf(intf, "invalid duty cycle %s\r\n", argv[2]);
+    return;
+  }
+
+  pwm_set_duty(chnl_map[i], duty);
+  shell_printf(intf, "set duty cycle to %u for channel %u\r\n", duty, i);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
