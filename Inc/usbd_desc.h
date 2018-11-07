@@ -1,8 +1,8 @@
 /**
   ******************************************************************************
-  * File Name          : gpio.h
-  * Description        : This file contains all the functions prototypes for 
-  *                      the gpio  
+  * @file           : usbd_desc.h
+  * @version        : v1.0_Cube
+  * @brief          : Header for usbd_conf.c file.
   ******************************************************************************
   * This notice applies to any and all portions of this file
   * that are not between comment pairs USER CODE BEGIN and
@@ -46,43 +46,110 @@
   *
   ******************************************************************************
   */
-
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __gpio_H
-#define __gpio_H
+#ifndef __USBD_DESC__H__
+#define __USBD_DESC__H__
+
 #ifdef __cplusplus
  extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
-#include "stm32f4xx_hal.h"
-#include "main.h"
+#include "usbd_def.h"
 
-/* USER CODE BEGIN Includes */
+/* USER CODE BEGIN INCLUDE */
 
-/* USER CODE END Includes */
+/* USER CODE END INCLUDE */
 
-/* USER CODE BEGIN Private defines */
+/** @addtogroup STM32_USB_OTG_DEVICE_LIBRARY
+  * @{
+  */
 
-/* USER CODE END Private defines */
+/** @defgroup USBD_DESC USBD_DESC
+  * @brief Usb device descriptors module.
+  * @{
+  */
 
-void MX_GPIO_Init(void);
+/** @defgroup USBD_DESC_Exported_Defines USBD_DESC_Exported_Defines
+  * @brief Defines.
+  * @{
+  */
 
-/* USER CODE BEGIN Prototypes */
+/* USER CODE BEGIN EXPORTED_DEFINES */
 
-/* USER CODE END Prototypes */
+/* USER CODE END EXPORTED_DEFINES */
+
+/**
+  * @}
+  */
+
+/** @defgroup USBD_DESC_Exported_TypesDefinitions USBD_DESC_Exported_TypesDefinitions
+  * @brief Types.
+  * @{
+  */
+
+/* USER CODE BEGIN EXPORTED_TYPES */
+
+/* USER CODE END EXPORTED_TYPES */
+
+/**
+  * @}
+  */
+
+/** @defgroup USBD_DESC_Exported_Macros USBD_DESC_Exported_Macros
+  * @brief Aliases.
+  * @{
+  */
+
+/* USER CODE BEGIN EXPORTED_MACRO */
+
+/* USER CODE END EXPORTED_MACRO */
+
+/**
+  * @}
+  */
+
+/** @defgroup USBD_DESC_Exported_Variables USBD_DESC_Exported_Variables
+  * @brief Public variables.
+  * @{
+  */
+
+/** Descriptor for the Usb device. */
+extern USBD_DescriptorsTypeDef FS_Desc;
+
+/* USER CODE BEGIN EXPORTED_VARIABLES */
+
+/* USER CODE END EXPORTED_VARIABLES */
+
+/**
+  * @}
+  */
+
+/** @defgroup USBD_DESC_Exported_FunctionsPrototype USBD_DESC_Exported_FunctionsPrototype
+  * @brief Public functions declaration.
+  * @{
+  */
+
+/* USER CODE BEGIN EXPORTED_FUNCTIONS */
+
+/* USER CODE END EXPORTED_FUNCTIONS */
+
+/**
+  * @}
+  */
+
+/**
+  * @}
+  */
+
+/**
+  * @}
+  */
 
 #ifdef __cplusplus
 }
 #endif
-#endif /*__ pinoutConfig_H */
 
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
+#endif /* __USBD_DESC__H__ */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
