@@ -12,6 +12,7 @@
 #include "pwm.h"
 #include "mpu6000.h"
 #include "accelgyro.h"
+#include "micros.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -44,6 +45,7 @@ static void shell_command_uptime(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_pwm(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_mpu(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_mpu_raw(ShellIntf* intf, int argc, const char** argv);
+static void shell_command_micros(ShellIntf* intf, int argc, const char** argv);
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -88,6 +90,11 @@ static ShellCommand     _commands[] =
     "mpu_raw",
     "read raw MPU values",
     shell_command_mpu_raw,
+  },
+  {
+    "micros",
+    "read current micros",
+    shell_command_micros,
   },
 };
 
@@ -216,6 +223,24 @@ shell_command_mpu_raw(ShellIntf* intf, int argc, const char** argv)
   shell_printf(intf, "GZ : %d\r\n", gyro[2]);
   shell_printf(intf, "\r\n");
   shell_printf(intf, "Sample Rate : %u\r\n", sample_rate);
+}
+
+static void
+shell_command_micros(ShellIntf* intf, int argc, const char** argv)
+{
+  uint32_t begin, end;
+
+  shell_printf(intf, "\r\n");
+
+  begin = micros_get();
+  HAL_Delay(1);
+  end = micros_get();
+
+  shell_printf(intf, "begin %lu, end %lu, delta: %lu\r\n", begin, end, end - begin);
+
+  begin = micros_get();
+  end = micros_get();
+  shell_printf(intf, "begin %lu, end %lu, delta: %lu\r\n", begin, end, end - begin);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

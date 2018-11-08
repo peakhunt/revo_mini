@@ -5,12 +5,17 @@
 #include "event_dispatcher.h"
 #include "event_list.h"
 
-volatile uint32_t     __uptime = 0;
+#include "tim.h"
+#include "micros.h"
+
+volatile uint32_t     __uptime  = 0;
+volatile uint32_t     __msec    = 0;
 
 void HAL_SYSTICK_Callback(void)
 {
   static uint16_t   count = 0;
 
+  __msec++;
   count++;
   if(count >= 1000)
   {
@@ -19,4 +24,13 @@ void HAL_SYSTICK_Callback(void)
   }
 
   event_set(1 << DISPATCH_EVENT_TIMER_TICK);
+}
+
+void
+HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  if(htim == &htim7)
+  {
+    micros_1ms_callback();
+  }
 }
