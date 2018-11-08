@@ -12,6 +12,7 @@
 #include "pwm.h"
 #include "mpu6000.h"
 #include "accelgyro.h"
+#include "magneto.h"
 #include "micros.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -46,6 +47,7 @@ static void shell_command_pwm(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_mpu(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_mpu_raw(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_micros(ShellIntf* intf, int argc, const char** argv);
+static void shell_command_mag_raw(ShellIntf* intf, int argc, const char** argv);
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -95,6 +97,11 @@ static ShellCommand     _commands[] =
     "micros",
     "read current micros",
     shell_command_micros,
+  },
+  {
+    "mag_raw",
+    "read raw MAG values",
+    shell_command_mag_raw,
   },
 };
 
@@ -241,6 +248,19 @@ shell_command_micros(ShellIntf* intf, int argc, const char** argv)
   begin = micros_get();
   end = micros_get();
   shell_printf(intf, "begin 0x%lx, end 0x%lx, delta: %lu\r\n", begin, end, end - begin);
+}
+
+static void
+shell_command_mag_raw(ShellIntf* intf, int argc, const char** argv)
+{
+  int16_t   mag[3];
+
+  magneto_get(mag);
+
+  shell_printf(intf, "\r\n");
+  shell_printf(intf, "MX : %d\r\n", mag[0]);
+  shell_printf(intf, "MY : %d\r\n", mag[1]);
+  shell_printf(intf, "MZ : %d\r\n", mag[2]);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

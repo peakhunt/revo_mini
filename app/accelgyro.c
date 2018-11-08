@@ -13,7 +13,7 @@ static uint16_t         _sample_count;
 static uint32_t last_msec;
 
 static void
-sample_timer_callback(SoftTimerElem* te)
+accgyro_sample_timer_callback(SoftTimerElem* te)
 {
   mpu6000_read_all(&_mpu);
   mainloop_timer_schedule(&_sample_timer, 1);
@@ -33,7 +33,7 @@ accelgyro_init(void)
   mpu6000_init(&_mpu);
 
   soft_timer_init_elem(&_sample_timer);
-  _sample_timer.cb    = sample_timer_callback;
+  _sample_timer.cb    = accgyro_sample_timer_callback;
 }
 
 void

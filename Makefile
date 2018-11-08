@@ -90,7 +90,9 @@ app/blinky.c \
 app/pwm.c \
 app/mpu6000.c \
 app/accelgyro.c \
-app/micros.c
+app/micros.c \
+app/hmc5883.c \
+app/magneto.c
 
 APP_INCLUDES = \
 -Iapp

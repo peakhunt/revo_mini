@@ -7,6 +7,7 @@
 #include "blinky.h"
 #include "pwm.h"
 #include "accelgyro.h"
+#include "magneto.h"
 #include "micros.h"
 
 void
@@ -34,6 +35,9 @@ app_start(void)
 
   accelgyro_init();
   accelgyro_start();
+
+  magneto_init();
+  magneto_start();
 }
 
 void
