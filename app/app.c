@@ -10,6 +10,8 @@
 #include "blinky.h"
 #include "pwm.h"
 
+#include "accelgyro.h"
+
 void
 app_init_f(void)
 {
@@ -31,6 +33,9 @@ void
 app_start(void)
 {
   pwm_start();
+
+  accelgyro_init();
+  accelgyro_start();
 }
 
 void

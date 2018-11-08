@@ -49,6 +49,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "stm32f4xx_hal.h"
+#include "spi.h"
 #include "tim.h"
 #include "usb_device.h"
 #include "gpio.h"
@@ -110,6 +111,7 @@ int main(void)
   MX_TIM9_Init();
   MX_TIM5_Init();
   MX_USB_DEVICE_Init();
+  MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
   app_init();
   app_start();
@@ -117,16 +119,12 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
-  {
-
+  app_loop();
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-    app_loop();
   /* USER CODE END 3 */
 
-  }
 }
 
 /**

@@ -10,6 +10,8 @@
 #include "shell.h"
 #include "shell_if_usb.h"
 #include "pwm.h"
+#include "mpu6000.h"
+#include "accelgyro.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -40,6 +42,8 @@ static void shell_command_help(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_version(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_uptime(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_pwm(ShellIntf* intf, int argc, const char** argv);
+static void shell_command_mpu(ShellIntf* intf, int argc, const char** argv);
+static void shell_command_mpu_raw(ShellIntf* intf, int argc, const char** argv);
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -74,6 +78,16 @@ static ShellCommand     _commands[] =
     "pwm",
     "set pwm out duty cycle",
     shell_command_pwm,
+  },
+  {
+    "mpu",
+    "mpu6000 related commands",
+    shell_command_mpu,
+  },
+  {
+    "mpu_raw",
+    "read raw MPU values",
+    shell_command_mpu_raw,
   },
 };
 
@@ -159,6 +173,49 @@ shell_command_pwm(ShellIntf* intf, int argc, const char** argv)
 
   pwm_set_duty(chnl_map[i], duty);
   shell_printf(intf, "set duty cycle to %u for channel %u\r\n", duty, i);
+}
+
+static void
+shell_command_mpu(ShellIntf* intf, int argc, const char** argv)
+{
+  uint8_t reg,
+          ret;
+
+  if(argc != 2)
+  {
+    shell_printf(intf, "Syntax error %s <reg>\r\n", argv[0]);
+    return;
+  }
+
+  reg = atoi(argv[1]);
+
+  ret = mpu6000_test(NULL, reg);
+
+  shell_printf(intf, "\r\n");
+  shell_printf(intf, "reg 0x%x: 0x%x\r\n", reg, ret);
+}
+
+static void
+shell_command_mpu_raw(ShellIntf* intf, int argc, const char** argv)
+{
+  int16_t accel[3],
+          gyro[3];
+
+  uint16_t  sample_rate;
+
+  accelgyro_get(accel, gyro);
+  sample_rate = accelgyro_sample_rate();
+
+  shell_printf(intf, "\r\n");
+  shell_printf(intf, "AX : %d\r\n", accel[0]);
+  shell_printf(intf, "AY : %d\r\n", accel[1]);
+  shell_printf(intf, "AZ : %d\r\n", accel[2]);
+  shell_printf(intf, "\r\n");
+  shell_printf(intf, "GX : %d\r\n", gyro[0]);
+  shell_printf(intf, "GY : %d\r\n", gyro[1]);
+  shell_printf(intf, "GZ : %d\r\n", gyro[2]);
+  shell_printf(intf, "\r\n");
+  shell_printf(intf, "Sample Rate : %u\r\n", sample_rate);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
