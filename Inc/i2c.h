@@ -1,8 +1,8 @@
 /**
   ******************************************************************************
-  * @file           : main.h
-  * @brief          : Header for main.c file.
-  *                   This file contains the common defines of the application.
+  * File Name          : I2C.h
+  * Description        : This file provides code for the configuration
+  *                      of the I2C instances.
   ******************************************************************************
   * This notice applies to any and all portions of this file
   * that are not between comment pairs USER CODE BEGIN and
@@ -46,58 +46,46 @@
   *
   ******************************************************************************
   */
-
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __MAIN_H__
-#define __MAIN_H__
+#ifndef __i2c_H
+#define __i2c_H
+#ifdef __cplusplus
+ extern "C" {
+#endif
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
+#include "main.h"
 
 /* USER CODE BEGIN Includes */
 
 /* USER CODE END Includes */
 
-/* Private define ------------------------------------------------------------*/
-
-#define PWM6_Pin GPIO_PIN_0
-#define PWM6_GPIO_Port GPIOA
-#define PWM5_Pin GPIO_PIN_1
-#define PWM5_GPIO_Port GPIOA
-#define PWM4_Pin GPIO_PIN_2
-#define PWM4_GPIO_Port GPIOA
-#define PWM3_Pin GPIO_PIN_3
-#define PWM3_GPIO_Port GPIOA
-#define MPU6000_SS_Pin GPIO_PIN_4
-#define MPU6000_SS_GPIO_Port GPIOA
-#define PWM1_Pin GPIO_PIN_0
-#define PWM1_GPIO_Port GPIOB
-#define PWM2_Pin GPIO_PIN_1
-#define PWM2_GPIO_Port GPIOB
-#define HMC5883L_DRDY_Pin GPIO_PIN_7
-#define HMC5883L_DRDY_GPIO_Port GPIOB
-
-/* ########################## Assert Selection ############################## */
-/**
-  * @brief Uncomment the line below to expanse the "assert_param" macro in the 
-  *        HAL drivers code
-  */
-/* #define USE_FULL_ASSERT    1U */
+extern I2C_HandleTypeDef hi2c1;
 
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
 
-#ifdef __cplusplus
- extern "C" {
-#endif
-void _Error_Handler(char *, int);
+extern void _Error_Handler(char *, int);
 
-#define Error_Handler() _Error_Handler(__FILE__, __LINE__)
+void MX_I2C1_Init(void);
+
+/* USER CODE BEGIN Prototypes */
+
+/* USER CODE END Prototypes */
+
 #ifdef __cplusplus
 }
 #endif
+#endif /*__ i2c_H */
 
-#endif /* __MAIN_H__ */
+/**
+  * @}
+  */
+
+/**
+  * @}
+  */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
