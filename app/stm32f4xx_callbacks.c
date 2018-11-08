@@ -31,6 +31,6 @@ HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   if(htim == &htim7)
   {
-    micros_1ms_callback();
+    micros_update_callback();
   }
 }

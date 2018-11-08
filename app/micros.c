@@ -3,27 +3,27 @@
 #include "micros.h"
 
 static TIM_HandleTypeDef*         _htim = &htim7;
-static volatile uint16_t          _mil_sec;
+static volatile uint16_t          _update_cnt;
 
 void
 micros_init(void)
 {
-  _mil_sec = 0;
+  _update_cnt = 0;
   HAL_TIM_Base_Start_IT(_htim);
 }
 
 uint32_t
 micros_get(void)
 {
-  uint32_t  usec = __HAL_TIM_GET_COUNTER(_htim);
+  uint16_t  usec = __HAL_TIM_GET_COUNTER(_htim);
   uint32_t  ret;
 
-  ret = _mil_sec * 1000 + usec;
+  ret = (_update_cnt << 16 ) | usec;
   return ret;
 }
 
 void
-micros_1ms_callback(void)
+micros_update_callback(void)
 {
-  _mil_sec++;
+  _update_cnt++;
 }

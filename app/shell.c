@@ -236,11 +236,11 @@ shell_command_micros(ShellIntf* intf, int argc, const char** argv)
   HAL_Delay(1);
   end = micros_get();
 
-  shell_printf(intf, "begin %lu, end %lu, delta: %lu\r\n", begin, end, end - begin);
+  shell_printf(intf, "begin 0x%lx, end 0x%lx, delta: %lu\r\n", begin, end, end - begin);
 
   begin = micros_get();
   end = micros_get();
-  shell_printf(intf, "begin %lu, end %lu, delta: %lu\r\n", begin, end, end - begin);
+  shell_printf(intf, "begin 0x%lx, end 0x%lx, delta: %lu\r\n", begin, end, end - begin);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
