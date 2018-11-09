@@ -3,9 +3,6 @@
 
 #include "app_common.h"
 
-#define ACCELGYRO_GYRO_CALIBRATION_TIMEOUT        20
-#define ACCELGYRO_ACCEL_CALIBRATION_TIMEOUT       10
-
 extern void accelgyro_init(void);
 extern void accelgyro_start(void);
 extern void accelgyro_stop(void);

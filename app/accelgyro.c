@@ -11,7 +11,9 @@
 // accelerometer is seto to +- 8G. 
 // so 1G is 4096
 //
-#define ACCELGYRO_1G_VALUE          4096
+#define ACCELGYRO_1G_VALUE                            4096
+#define ACCELGYRO_ACCEL_CALIBRATE_SAMPLE_COUNT        20000
+#define ACCELGYRO_GYRO_CALIBRATE_SAMPLE_COUNT         20000
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -19,7 +21,6 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 static void accgyro_sample_timer_callback(SoftTimerElem* te);
-static void accgyro_gyro_cal_timer_callback(SoftTimerElem* te);
 static void accgyro_gyro_cal_update(int16_t gx, int16_t gy, int16_t gz);
 static void accgyro_accel_cal_update(int16_t ax, int16_t ay, int16_t az);
 
@@ -41,7 +42,6 @@ static uint32_t last_msec;
 // gyro calibration related
 //
 ////////////////////////////////////////////////////////////////////////////////
-static SoftTimerElem    _gyro_cal_timer;
 static bool             _gyro_cal_in_prog;
 static float            _gyro_sum[3];
 static int32_t          _gyro_cal_sum_count;
@@ -54,8 +54,6 @@ static void*  _gyro_cal_cb_arg;
 // accel calibration related
 //
 ////////////////////////////////////////////////////////////////////////////////
-#define ACCELGYRO_ACCEL_CALIBRATE_SAMPLE_COUNT        8000
-
 static bool             _accel_cal_in_prog;
 static accelgyro_accel_calib_step_callback  _accel_cal_step_cb;
 static accelgyro_accel_calib_done_callback  _accel_cal_done_cb;
@@ -147,27 +145,26 @@ accelgyro_sample_rate(void)
 //
 ////////////////////////////////////////////////////////////////////////////////
 static void
-accgyro_gyro_cal_timer_callback(SoftTimerElem* te)
+accgyro_gyro_cal_update(int16_t gx, int16_t gy, int16_t gz)
 {
   int16_t   offset[3];
 
-  offset[0] = (int16_t)(_gyro_sum[0] / _gyro_cal_sum_count);
-  offset[1] = (int16_t)(_gyro_sum[1] / _gyro_cal_sum_count);
-  offset[2] = (int16_t)(_gyro_sum[2] / _gyro_cal_sum_count);
-
-  _gyro_cal_in_prog = false;
-
-  _gyro_cal_cb(offset, _gyro_cal_cb_arg);
-}
-
-static void
-accgyro_gyro_cal_update(int16_t gx, int16_t gy, int16_t gz)
-{
   _gyro_sum[0] += gx;
   _gyro_sum[1] += gy;
   _gyro_sum[2] += gz;
 
   _gyro_cal_sum_count++;
+
+  if(_gyro_cal_sum_count > ACCELGYRO_GYRO_CALIBRATE_SAMPLE_COUNT)
+  {
+    offset[0] = (int16_t)(_gyro_sum[0] / _gyro_cal_sum_count);
+    offset[1] = (int16_t)(_gyro_sum[1] / _gyro_cal_sum_count);
+    offset[2] = (int16_t)(_gyro_sum[2] / _gyro_cal_sum_count);
+
+    _gyro_cal_in_prog = false;
+
+    _gyro_cal_cb(offset, _gyro_cal_cb_arg);
+  }
 }
 
 bool
@@ -181,17 +178,12 @@ accelgyro_gyro_calibrate(accelgyro_gyro_calib_callback cb, void* cb_arg)
   _gyro_cal_cb      = cb;
   _gyro_cal_cb_arg  = cb_arg;
 
-  soft_timer_init_elem(&_gyro_cal_timer);
-  _gyro_cal_timer.cb    = accgyro_gyro_cal_timer_callback;
-
   _gyro_sum[0]    = 
   _gyro_sum[1]    = 
   _gyro_sum[2]    = 0.0f;
 
   _gyro_cal_sum_count = 0;
   _gyro_cal_in_prog = true;
-
-  mainloop_timer_schedule(&_gyro_cal_timer, ACCELGYRO_GYRO_CALIBRATION_TIMEOUT * 1000);
 
   return true;
 }

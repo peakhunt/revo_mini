@@ -301,7 +301,7 @@ shell_command_mag_cal_callback(int16_t offsets[3], void* cb_arg)
 static void
 shell_command_mag_cal(ShellIntf* intf, int argc, const char** argv)
 {
-  shell_printf(intf, "\r\nStarting %d second Magnetometer Calibration\r\n", MAGNETO_CALIBRATION_TIMEOUT);
+  shell_printf(intf, "\r\nStarting Magnetometer Calibration\r\n");
 
   if(magneto_calibrate(shell_command_mag_cal_callback, (void*)intf) == false)
   {
@@ -330,7 +330,7 @@ shell_command_gyro_cal_callback(int16_t offsets[3], void* cb_arg)
 static void
 shell_command_gyro_cal(ShellIntf* intf, int argc, const char** argv)
 {
-  shell_printf(intf, "\r\nStarting %d second Gyro Calibration\r\n", ACCELGYRO_GYRO_CALIBRATION_TIMEOUT);
+  shell_printf(intf, "\r\nStarting Gyro Calibration\r\n");
 
   if(accelgyro_gyro_calibrate(shell_command_gyro_cal_callback, (void*)intf) == false)
   {

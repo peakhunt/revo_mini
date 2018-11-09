@@ -4,13 +4,14 @@
 #include "mainloop_timer.h"
 #include "sensor_calib.h"
 
+#define MAGNETOMETER_CALIBRATE_SAMPLE_COUNT           (10*90)     // 10 samples for 90 seconds
+
 ////////////////////////////////////////////////////////////////////////////////
 //
 // private prototypes
 //
 ////////////////////////////////////////////////////////////////////////////////
 static void mag_sample_timer_callback(SoftTimerElem* te);
-static void mag_calib_timer_callback(SoftTimerElem* te);
 static void mag_calib_update(int16_t mx, int16_t my, int16_t mz);
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -29,7 +30,7 @@ static SoftTimerElem    _sample_timer;
 static bool             _mag_calib_in_prog;
 static int16_t          _mag_prev[3];
 static sensor_calib_t   _cal_state;
-static SoftTimerElem    _calib_timer;
+static uint32_t         _mag_cal_sample_count;
 
 static magneto_calibrate_callback   _cb;
 static void*                        _cb_arg;
@@ -88,29 +89,13 @@ magneto_get(int16_t mag[3])
 //
 ////////////////////////////////////////////////////////////////////////////////
 static void
-mag_calib_timer_callback(SoftTimerElem* te)
-{
-  float magZerof[3];
-  int16_t   offsets[3];
-
-  sensorCalibrationSolveForOffset(&_cal_state, magZerof);
-
-  for (int axis = 0; axis < 3; axis++)
-  {
-    offsets[axis] = lrintf(magZerof[axis]);
-  }
-
-  _mag_calib_in_prog = false;
-
-  _cb(offsets, _cb_arg);
-}
-
-static void
 mag_calib_update(int16_t mx, int16_t my, int16_t mz)
 {
   float     diffMag = 0;
   float     avgMag = 0;
   int32_t   mag_data[3];
+
+  _mag_cal_sample_count++;
 
   mag_data[0] = mx;
   mag_data[1] = my;
@@ -129,6 +114,23 @@ mag_calib_update(int16_t mx, int16_t my, int16_t mz)
       _mag_prev[axis] = mag_data[axis];
     }
   }
+
+  if(_mag_cal_sample_count > MAGNETOMETER_CALIBRATE_SAMPLE_COUNT)
+  {
+    float     magZerof[3];
+    int16_t   offsets[3];
+
+    sensorCalibrationSolveForOffset(&_cal_state, magZerof);
+
+    for (int axis = 0; axis < 3; axis++)
+    {
+      offsets[axis] = lrintf(magZerof[axis]);
+    }
+
+    _mag_calib_in_prog = false;
+
+    _cb(offsets, _cb_arg);
+  }
 }
 
 bool
@@ -138,9 +140,6 @@ magneto_calibrate(magneto_calibrate_callback cb, void* cb_arg)
   {
     return false;
   }
-
-  soft_timer_init_elem(&_calib_timer);
-  _calib_timer.cb = mag_calib_timer_callback;
 
   _cb     = cb;
   _cb_arg = cb_arg;
@@ -152,7 +151,7 @@ magneto_calibrate(magneto_calibrate_callback cb, void* cb_arg)
   sensorCalibrationResetState(&_cal_state);
 
   _mag_calib_in_prog = true;
-  mainloop_timer_schedule(&_calib_timer, MAGNETO_CALIBRATION_TIMEOUT * 1000);   // 1 minute timer
+  _mag_cal_sample_count = 0;
 
   return true;
 }
