@@ -120,12 +120,10 @@ mpu6000_init(MPU6000_t* mpu)
   // +- 1000 degrees per sec
   mpu6000_write_reg(mpu, MPU6000_GYRO_CONFIG, (0x02 << 3));
   HAL_Delay(1);
-
-  mpu6000_read_all(mpu);
 }
 
 void
-mpu6000_read_all(MPU6000_t* mpu)
+mpu6000_read_all(MPU6000_t* mpu, int16_t a[3], int16_t g[3])
 {
   uint8_t data[14];
   int16_t temp;
@@ -134,18 +132,18 @@ mpu6000_read_all(MPU6000_t* mpu)
   mpu6000_read_data(mpu, MPU6000_ACCEL_XOUT_H, data, 14);
 
   /* Format accelerometer data */
-  mpu->Accelerometer_X = (int16_t)(data[0] << 8 | data[1]);
-  mpu->Accelerometer_Y = (int16_t)(data[2] << 8 | data[3]);
-  mpu->Accelerometer_Z = (int16_t)(data[4] << 8 | data[5]);
+  a[0] = (int16_t)(data[0] << 8 | data[1]);
+  a[1] = (int16_t)(data[2] << 8 | data[3]);
+  a[2] = (int16_t)(data[4] << 8 | data[5]);
 
   /* Format temperature */
   temp = (data[6] << 8 | data[7]);
   mpu->Temperature = (float)((float)((int16_t)temp) / (float)340.0 + (float)36.53);
 
   /* Format gyroscope data */
-  mpu->Gyroscope_X = (int16_t)(data[8] << 8 | data[9]);
-  mpu->Gyroscope_Y = (int16_t)(data[10] << 8 | data[11]);
-  mpu->Gyroscope_Z = (int16_t)(data[12] << 8 | data[13]);
+  g[0] = (int16_t)(data[8] << 8 | data[9]);
+  g[1] = (int16_t)(data[10] << 8 | data[11]);
+  g[2] = (int16_t)(data[12] << 8 | data[13]);
 }
 
 uint8_t

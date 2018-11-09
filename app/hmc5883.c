@@ -48,10 +48,6 @@ hmc5883_init(hmc5883Mag* mag, uint8_t address, hmc5883MagGain gain)
 {
   mag->address    = address;
 
-  mag->rx   = 0.0f;
-  mag->ry   = 0.0f;
-  mag->rz   = 0.0f;
-
   //
   // enable magnetometer
   //
@@ -81,13 +77,13 @@ hmc5883_set_mag_gain(hmc5883Mag* mag, hmc5883MagGain gain)
 }
 
 void
-hmc5883_read(hmc5883Mag* mag)
+hmc5883_read(hmc5883Mag* mag, int16_t m[3])
 {
   uint8_t   data[6];
 
   hmc5883_read_reg(mag, HMC5883_REGISTER_MAG_OUT_X_H_M, data, 6);
 
-  mag->rx   = (int16_t)(data[1] | ((int16_t)(data[0] << 8)));
-  mag->rz   = (int16_t)(data[3] | ((int16_t)(data[2] << 8)));
-  mag->ry   = (int16_t)(data[5] | ((int16_t)(data[4] << 8)));
+  m[0] = (int16_t)(data[1] | ((int16_t)(data[0] << 8)));
+  m[2] = (int16_t)(data[3] | ((int16_t)(data[2] << 8)));
+  m[1] = (int16_t)(data[5] | ((int16_t)(data[4] << 8)));
 }

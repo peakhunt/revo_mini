@@ -14,6 +14,7 @@
 #include "accelgyro.h"
 #include "magneto.h"
 #include "micros.h"
+#include "imu.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -51,6 +52,10 @@ static void shell_command_mag_raw(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_mag_cal(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_gyro_cal(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_accel_cal(ShellIntf* intf, int argc, const char** argv);
+static void shell_command_mag(ShellIntf* intf, int argc, const char** argv);
+static void shell_command_gyro(ShellIntf* intf, int argc, const char** argv);
+static void shell_command_accel(ShellIntf* intf, int argc, const char** argv);
+static void shell_command_attitude(ShellIntf* intf, int argc, const char** argv);
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -121,6 +126,26 @@ static ShellCommand     _commands[] =
     "calibrate accelerometer",
     shell_command_accel_cal,
   },
+  {
+    "gyro",
+    "show gyro value",
+    shell_command_gyro,
+  },
+  {
+    "accel",
+    "show accelerometer value",
+    shell_command_accel,
+  },
+  {
+    "mag",
+    "show magnetometer value",
+    shell_command_mag,
+  },
+  {
+    "attitude",
+    "show attitude",
+    shell_command_attitude,
+  }
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -230,22 +255,18 @@ shell_command_mpu(ShellIntf* intf, int argc, const char** argv)
 static void
 shell_command_mpu_raw(ShellIntf* intf, int argc, const char** argv)
 {
-  int16_t accel[3],
-          gyro[3];
-
   uint16_t  sample_rate;
 
-  accelgyro_get(accel, gyro);
   sample_rate = accelgyro_sample_rate();
 
   shell_printf(intf, "\r\n");
-  shell_printf(intf, "AX : %d\r\n", accel[0]);
-  shell_printf(intf, "AY : %d\r\n", accel[1]);
-  shell_printf(intf, "AZ : %d\r\n", accel[2]);
+  shell_printf(intf, "AX : %d\r\n", accel_raw[0]);
+  shell_printf(intf, "AY : %d\r\n", accel_raw[1]);
+  shell_printf(intf, "AZ : %d\r\n", accel_raw[2]);
   shell_printf(intf, "\r\n");
-  shell_printf(intf, "GX : %d\r\n", gyro[0]);
-  shell_printf(intf, "GY : %d\r\n", gyro[1]);
-  shell_printf(intf, "GZ : %d\r\n", gyro[2]);
+  shell_printf(intf, "GX : %d\r\n", gyro_raw[0]);
+  shell_printf(intf, "GY : %d\r\n", gyro_raw[1]);
+  shell_printf(intf, "GZ : %d\r\n", gyro_raw[2]);
   shell_printf(intf, "\r\n");
   shell_printf(intf, "Sample Rate : %u\r\n", sample_rate);
 }
@@ -271,14 +292,46 @@ shell_command_micros(ShellIntf* intf, int argc, const char** argv)
 static void
 shell_command_mag_raw(ShellIntf* intf, int argc, const char** argv)
 {
-  int16_t   mag[3];
-
-  magneto_get(mag);
-
   shell_printf(intf, "\r\n");
-  shell_printf(intf, "MX : %d\r\n", mag[0]);
-  shell_printf(intf, "MY : %d\r\n", mag[1]);
-  shell_printf(intf, "MZ : %d\r\n", mag[2]);
+  shell_printf(intf, "MX : %d\r\n", mag_raw[0]);
+  shell_printf(intf, "MY : %d\r\n", mag_raw[1]);
+  shell_printf(intf, "MZ : %d\r\n", mag_raw[2]);
+}
+
+static void
+shell_command_mag(ShellIntf* intf, int argc, const char** argv)
+{
+  shell_printf(intf, "\r\n");
+  shell_printf(intf, "MX : %d\r\n", mag_value[0]);
+  shell_printf(intf, "MY : %d\r\n", mag_value[1]);
+  shell_printf(intf, "MZ : %d\r\n", mag_value[2]);
+}
+
+static void
+shell_command_gyro(ShellIntf* intf, int argc, const char** argv)
+{
+  shell_printf(intf, "\r\n");
+  shell_printf(intf, "GX : %d\r\n", gyro_value[0]);
+  shell_printf(intf, "GY : %d\r\n", gyro_value[1]);
+  shell_printf(intf, "GZ : %d\r\n", gyro_value[2]);
+}
+
+static void
+shell_command_accel(ShellIntf* intf, int argc, const char** argv)
+{
+  shell_printf(intf, "\r\n");
+  shell_printf(intf, "AX : %d\r\n", accel_value[0]);
+  shell_printf(intf, "AY : %d\r\n", accel_value[1]);
+  shell_printf(intf, "AZ : %d\r\n", accel_value[2]);
+}
+
+static void
+shell_command_attitude(ShellIntf* intf, int argc, const char** argv)
+{
+  shell_printf(intf, "\r\n");
+  shell_printf(intf, "Roll  : %d\r\n", attitude[0]);
+  shell_printf(intf, "Pitch : %d\r\n", attitude[1]);
+  shell_printf(intf, "Yaw   : %d\r\n", attitude[2]);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

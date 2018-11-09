@@ -207,7 +207,7 @@ madgwick_updateIMU(madgwick_t* madgwick,
 }
 
 void
-madgwick_get_roll_pitch_yaw(madgwick_t* madgwick, float data[3], float md)
+madgwick_get_roll_pitch_yaw(madgwick_t* madgwick, int16_t data[3], float md)
 {
   float roll, pitch, yaw;
 
@@ -215,14 +215,18 @@ madgwick_get_roll_pitch_yaw(madgwick_t* madgwick, float data[3], float md)
   pitch = asinf(-2.0f * (Q1*Q3 - Q0*Q2));
   yaw   = atan2f(Q1*Q2 + Q0*Q3, 0.5f - Q2*Q2 - Q3*Q3);
 
-  data[0] = roll * 57.29578f;
-  data[1] = pitch * 57.29578f;
-  data[2] = yaw * 57.29578f + md;
+  roll  = roll * 57.29578f;
+  pitch = pitch * 57.29578f;
+  yaw   = yaw * 57.29578f + md;
 
-  if (data[2] < 0.0f)
+  if (yaw < 0.0f)
   {
-    data[2] += 360.0f;
+    yaw += 360.0f;
   }
+
+  data[0] = (int16_t)(roll * 10);
+  data[1] = (int16_t)(pitch * 10);
+  data[2] = (int16_t)(yaw * 10);
 }
 
 void

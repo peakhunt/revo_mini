@@ -9,6 +9,7 @@
 #include "accelgyro.h"
 #include "magneto.h"
 #include "micros.h"
+#include "imu.h"
 
 void
 app_init_f(void)
@@ -33,11 +34,13 @@ app_start(void)
 {
   pwm_start();
 
-  accelgyro_init();
+  accelgyro_init(sensor_align_cw_180, sensor_align_cw_180);
   accelgyro_start();
 
-  magneto_init();
+  magneto_init(sensor_align_cw_0);
   magneto_start();
+
+  imu_init();
 }
 
 void

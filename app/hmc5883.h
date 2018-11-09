@@ -37,15 +37,11 @@ typedef enum
 
 typedef struct hmc5883Mag_s
 {
-  int16_t rx;       // raw x
-  int16_t ry;       // raw y
-  int16_t rz;       // raw y
-
   uint8_t             address;
 } hmc5883Mag;
 
 extern void hmc5883_init(hmc5883Mag* mag, uint8_t address, hmc5883MagGain gain);
 extern void hmc5883_set_mag_gain(hmc5883Mag* mag, hmc5883MagGain gain);
-extern void hmc5883_read(hmc5883Mag* mag);
+extern void hmc5883_read(hmc5883Mag* mag, int16_t m[3]);
 
 #endif //!__HMC5883_DEF_H__

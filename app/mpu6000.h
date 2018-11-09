@@ -64,17 +64,11 @@
 
 typedef struct 
 {
-  int16_t     Accelerometer_X;  /*!< Accelerometer value X axis */
-  int16_t     Accelerometer_Y;  /*!< Accelerometer value Y axis */
-  int16_t     Accelerometer_Z;  /*!< Accelerometer value Z axis */
-  int16_t     Gyroscope_X;      /*!< Gyroscope value X axis */
-  int16_t     Gyroscope_Y;      /*!< Gyroscope value Y axis */
-  int16_t     Gyroscope_Z;      /*!< Gyroscope value Z axis */
   float       Temperature;      /*!< Temperature in degrees */
 } MPU6000_t;
 
 extern void mpu6000_init(MPU6000_t* mpu);
-extern void mpu6000_read_all(MPU6000_t* mpu);
+extern void mpu6000_read_all(MPU6000_t* mpu, int16_t a[3], int16_t g[3]);
 extern uint8_t mpu6000_test(MPU6000_t* mpu, uint8_t reg);
 
 #endif //!__MPU_6000_DEF_H__

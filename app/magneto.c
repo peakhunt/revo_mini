@@ -21,6 +21,16 @@ static void mag_calib_update(int16_t mx, int16_t my, int16_t mz);
 ////////////////////////////////////////////////////////////////////////////////
 static hmc5883Mag       _mag;
 static SoftTimerElem    _sample_timer;
+static sensor_align_t   _align;
+
+////////////////////////////////////////////////////////////////////////////////
+//
+// visible to externals
+//
+////////////////////////////////////////////////////////////////////////////////
+int16_t                 mag_raw[3];
+int16_t                 mag_value[3];
+int16_t                 mag_offset[3];
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -43,19 +53,28 @@ static void*                        _cb_arg;
 static void
 mag_sample_timer_callback(SoftTimerElem* te)
 {
-  hmc5883_read(&_mag);
+  hmc5883_read(&_mag, mag_raw);
+
+  mag_value[0] = mag_raw[0] - mag_offset[0];
+  mag_value[1] = mag_raw[1] - mag_offset[1];
+  mag_value[2] = mag_raw[2] - mag_offset[2];
+
+  sensor_align_values(mag_value, _align);
+
   mainloop_timer_schedule(&_sample_timer, 100);
 
   if(_mag_calib_in_prog)
   {
-    mag_calib_update(_mag.rx, _mag.ry, _mag.rz);
+    mag_calib_update(mag_raw[0], mag_raw[1], mag_raw[2]);
   }
 }
 
 void
-magneto_init(void)
+magneto_init(sensor_align_t align)
 {
-  hmc5883_init(&_mag, HMC5883_ADDRESS_MAG, HMC5883_MAGGAIN_4_0);
+  _align = align;
+
+  hmc5883_init(&_mag, HMC5883_ADDRESS_MAG, HMC5883_MAGGAIN_1_3);
 
   soft_timer_init_elem(&_sample_timer);
   _sample_timer.cb = mag_sample_timer_callback;
@@ -73,14 +92,6 @@ void
 magneto_stop(void)
 {
   mainloop_timer_cancel(&_sample_timer);
-}
-
-void
-magneto_get(int16_t mag[3])
-{
-  mag[0] = _mag.rx;
-  mag[1] = _mag.ry;
-  mag[2] = _mag.rz;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -118,18 +129,17 @@ mag_calib_update(int16_t mx, int16_t my, int16_t mz)
   if(_mag_cal_sample_count > MAGNETOMETER_CALIBRATE_SAMPLE_COUNT)
   {
     float     magZerof[3];
-    int16_t   offsets[3];
 
     sensorCalibrationSolveForOffset(&_cal_state, magZerof);
 
     for (int axis = 0; axis < 3; axis++)
     {
-      offsets[axis] = lrintf(magZerof[axis]);
+      mag_offset[axis] = lrintf(magZerof[axis]);
     }
 
     _mag_calib_in_prog = false;
 
-    _cb(offsets, _cb_arg);
+    _cb(mag_offset, _cb_arg);
   }
 }
 
