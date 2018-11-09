@@ -92,7 +92,8 @@ app/mpu6000.c \
 app/accelgyro.c \
 app/micros.c \
 app/hmc5883.c \
-app/magneto.c
+app/magneto.c \
+app/madgwick.c
 
 APP_INCLUDES = \
 -Iapp

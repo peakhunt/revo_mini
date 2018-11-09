@@ -50,9 +50,6 @@ void
 accelgyro_stop(void)
 {
   mainloop_timer_cancel(&_sample_timer);
-#if 0
-  mainloop_timer_cancel(&_one_sec_timer);
-#endif
 }
 
 void
