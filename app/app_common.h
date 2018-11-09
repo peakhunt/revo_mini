@@ -30,6 +30,10 @@
 //#define MIN(a,b)      ((a) < (b) ? (a) : (b))
 //#define MAX(a,b)      ((a) > (b) ? (a) : (b))
 
+#define X       0
+#define Y       1
+#define Z       2
+
 ////////////////////////////////////////////////////////////////////////////////
 //
 // system uptime. defined in stm32f1xx_callback.c

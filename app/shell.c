@@ -50,6 +50,7 @@ static void shell_command_micros(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_mag_raw(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_mag_cal(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_gyro_cal(ShellIntf* intf, int argc, const char** argv);
+static void shell_command_accel_cal(ShellIntf* intf, int argc, const char** argv);
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -114,6 +115,11 @@ static ShellCommand     _commands[] =
     "gyro_cal",
     "calibrate gyro",
     shell_command_gyro_cal,
+  },
+  {
+    "accel_cal",
+    "calibrate accelerometer",
+    shell_command_accel_cal,
   },
 };
 
@@ -327,6 +333,50 @@ shell_command_gyro_cal(ShellIntf* intf, int argc, const char** argv)
   shell_printf(intf, "\r\nStarting %d second Gyro Calibration\r\n", ACCELGYRO_GYRO_CALIBRATION_TIMEOUT);
 
   if(accelgyro_gyro_calibrate(shell_command_gyro_cal_callback, (void*)intf) == false)
+  {
+    shell_printf(intf, "Gyro/Accel Calibration Already In Progress\r\n");
+    return;
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//
+// accel calibration
+//
+////////////////////////////////////////////////////////////////////////////////
+static void
+shell_command_accel_cal_step_callback(int ndx, void* cb_arg)
+{
+  ShellIntf* intf = (ShellIntf*)cb_arg;
+
+  shell_printf(intf, "\r\nAccelerometer Meter Calibration Sampling Done for %d\r\n", ndx);
+}
+
+static void
+shell_command_accel_cal_done_callback(int16_t offsets[3], int16_t gains[3], void* cb_arg)
+{
+  ShellIntf* intf = (ShellIntf*)cb_arg;
+
+  shell_printf(intf, "\r\nAccelerometer Meter Calibration Complete\r\n");
+
+  shell_printf(intf, "Offset X : %d\r\n", offsets[0]);
+  shell_printf(intf, "Offset Y : %d\r\n", offsets[1]);
+  shell_printf(intf, "Offset Z : %d\r\n", offsets[2]);
+
+  shell_printf(intf, "Gain   X : %d\r\n", gains[0]);
+  shell_printf(intf, "Gain   Y : %d\r\n", gains[1]);
+  shell_printf(intf, "Gain   Z : %d\r\n", gains[2]);
+}
+
+static void
+shell_command_accel_cal(ShellIntf* intf, int argc, const char** argv)
+{
+  shell_printf(intf, "\r\nStarting Accelerometer Calibration\r\n");
+
+  if(accelgyro_accel_calibrate(
+        shell_command_accel_cal_step_callback,
+        shell_command_accel_cal_done_callback,
+        (void*)intf) == false)
   {
     shell_printf(intf, "Gyro/Accel Calibration Already In Progress\r\n");
     return;
