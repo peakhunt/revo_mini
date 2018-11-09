@@ -74,6 +74,8 @@
 #define PWM1_GPIO_Port GPIOB
 #define PWM2_Pin GPIO_PIN_1
 #define PWM2_GPIO_Port GPIOB
+#define FLASH_CS_Pin GPIO_PIN_3
+#define FLASH_CS_GPIO_Port GPIOB
 #define HMC5883L_DRDY_Pin GPIO_PIN_7
 #define HMC5883L_DRDY_GPIO_Port GPIOB
 
