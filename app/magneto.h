@@ -3,6 +3,8 @@
 
 #include "app_common.h"
 
+#define MAGNETO_CALIBRATION_TIMEOUT   60
+
 extern void magneto_init(void);
 extern void magneto_start(void);
 extern void magneto_stop(void);

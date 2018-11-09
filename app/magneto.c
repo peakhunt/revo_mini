@@ -152,7 +152,7 @@ magneto_calibrate(magneto_calibrate_callback cb, void* cb_arg)
   sensorCalibrationResetState(&_cal_state);
 
   _mag_calib_in_prog = true;
-  mainloop_timer_schedule(&_calib_timer, 60 * 1000);   // 1 minute timer
+  mainloop_timer_schedule(&_calib_timer, MAGNETO_CALIBRATION_TIMEOUT * 1000);   // 1 minute timer
 
   return true;
 }
