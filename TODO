@@ -3,3 +3,6 @@ b) sbus RX receiver
 c) magnetometer
 d) barometer
 e) AHRS IMU
+f) magnetometer calibration
+g) accel calibration
+h) gyro calibration

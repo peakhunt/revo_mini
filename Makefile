@@ -93,7 +93,8 @@ app/accelgyro.c \
 app/micros.c \
 app/hmc5883.c \
 app/magneto.c \
-app/madgwick.c
+app/madgwick.c \
+app/sensor_calib.c
 
 APP_INCLUDES = \
 -Iapp

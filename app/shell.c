@@ -48,6 +48,7 @@ static void shell_command_mpu(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_mpu_raw(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_micros(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_mag_raw(ShellIntf* intf, int argc, const char** argv);
+static void shell_command_mag_cal(ShellIntf* intf, int argc, const char** argv);
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -102,6 +103,11 @@ static ShellCommand     _commands[] =
     "mag_raw",
     "read raw MAG values",
     shell_command_mag_raw,
+  },
+  {
+    "mag_cal",
+    "calibrate magnetometer",
+    shell_command_mag_cal,
   },
 };
 
@@ -261,6 +267,34 @@ shell_command_mag_raw(ShellIntf* intf, int argc, const char** argv)
   shell_printf(intf, "MX : %d\r\n", mag[0]);
   shell_printf(intf, "MY : %d\r\n", mag[1]);
   shell_printf(intf, "MZ : %d\r\n", mag[2]);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//
+// magnetometer calibration
+//
+////////////////////////////////////////////////////////////////////////////////
+static void
+shell_command_mag_cal_callback(int16_t offsets[3], void* cb_arg)
+{
+  ShellIntf* intf = (ShellIntf*)cb_arg;
+
+  shell_printf(intf, "\r\nMagnetometer Calibration Complete\r\n");
+
+  shell_printf(intf, "Offset X : %d\r\n", offsets[0]);
+  shell_printf(intf, "Offset Y : %d\r\n", offsets[1]);
+  shell_printf(intf, "Offset Z : %d\r\n", offsets[2]);
+}
+
+static void
+shell_command_mag_cal(ShellIntf* intf, int argc, const char** argv)
+{
+  shell_printf(intf, "\r\nStarting Magnetometer Calibration\r\n");
+  if(magneto_calibrate(shell_command_mag_cal_callback, (void*)intf) == false)
+  {
+    shell_printf(intf, "Magnetometer Calibration Already In Progress\r\n");
+    return;
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
