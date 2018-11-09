@@ -26,8 +26,23 @@ int16_t                 attitude[3];
 static void
 imu_run(imu_t* imu)
 {
+  // very weird
   //
-  // NED setup
+  // it looks like this is the required coord convertion
+  // for Madgwick. but I am so confused.
+  ///
+  // for accel
+  //     +x is up
+  //     +y is left
+  //     +z is up
+  // for magnetometer
+  //    +x is up
+  //    +y is left
+  //    +z is up
+  // for gyro
+  //    +x is left roll
+  //    +y is down pitch
+  //    +z is compass rotation
   //
   madgwick_update(&imu->filter,
       -gyro_dps[1],   -gyro_dps[0],   -gyro_dps[2],
