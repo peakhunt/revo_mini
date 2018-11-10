@@ -34,7 +34,8 @@ app_start(void)
 {
   pwm_start();
 
-  accelgyro_init(sensor_align_cw_180, sensor_align_cw_180);
+  //accelgyro_init(sensor_align_cw_180, sensor_align_cw_180);
+  accelgyro_init(sensor_align_cw_0, sensor_align_cw_0);
   accelgyro_start();
 
   magneto_init(sensor_align_cw_0);

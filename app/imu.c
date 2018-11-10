@@ -18,36 +18,76 @@ static imu_t            _imu;
 static SoftTimerElem    _sample_timer;
 int16_t                 attitude[3];
 
+int16_t                 accel_ned[3],
+                        gyro_ned[3],
+                        mag_ned[3];
+
 ////////////////////////////////////////////////////////////////////////////////
 //
+// sensor alignment
+// both accel/gyro/mag
+//
+//  y
+//  |
+// <----
+//  |
+//  |       /\
+//  |_______|_____x
+//  z+      |
+//  ZCCW    |
+//
+//
+// madgwick coord
+//
+//  X (North, Roll)
+//  |
+//  |
+//  |___________y (East, Pitch)
+//  z+ (heading)
+// 
+// Pitch increases with north up
+// Roll increases to the right bank
+// Heading increases closewise.
+//
+// This is the required coordinate system
+// and accel/mag coordinates and
+// gyro directions should be adjusted
+// according to the required coordinate system.
+// 
 // module privates
 //
 ////////////////////////////////////////////////////////////////////////////////
+static void imu_ned_aling(imu_t* imu)
+{
+  accel_ned[0] = accel_value[1];
+  accel_ned[1] = accel_value[0];
+  accel_ned[2] = accel_value[2];
+
+  gyro_ned[0]  = -gyro_dps[1];
+  gyro_ned[1]  = -gyro_dps[0];
+  gyro_ned[2]  = -gyro_dps[2];
+
+  mag_ned[0] = mag_value[1];
+  mag_ned[1] = mag_value[0];
+  mag_ned[2] = mag_value[2];
+}
+
 static void
 imu_run(imu_t* imu)
 {
-  // very weird
-  //
-  // it looks like this is the required coord convertion
-  // for Madgwick. but I am so confused.
-  ///
-  // for accel
-  //     +x is up
-  //     +y is left
-  //     +z is up
-  // for magnetometer
-  //    +x is up
-  //    +y is left
-  //    +z is up
-  // for gyro
-  //    +x is left roll
-  //    +y is down pitch
-  //    +z is compass rotation
-  //
+  imu_ned_aling(imu);
+
+#if 0
   madgwick_update(&imu->filter,
       -gyro_dps[1],   -gyro_dps[0],   -gyro_dps[2],
       accel_value[1], accel_value[0], accel_value[2],
       mag_value[1],   mag_value[0],   mag_value[2]);
+#else
+  madgwick_update(&imu->filter,
+      gyro_ned[0],    gyro_ned[1],    gyro_ned[2],
+      accel_ned[0],   accel_ned[1],   accel_ned[2],
+      mag_ned[0],     mag_ned[1],     mag_ned[2]);
+#endif
 
   madgwick_get_roll_pitch_yaw(&imu->filter,
       attitude, 0.0f);
