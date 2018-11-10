@@ -224,6 +224,10 @@ madgwick_get_roll_pitch_yaw(madgwick_t* madgwick, int16_t data[3], float md)
   // pretty sure this conversion is pretty much different from
   // quaternion representation
   //
+  // roll +- 180
+  // pitch +- 90
+  // yaw 0-360
+  //
   roll  = -atan2f(Q0*Q1 + Q2*Q3, 0.5f - Q1*Q1 - Q2*Q2);
   pitch = -asinf(-2.0f * (Q1*Q3 - Q0*Q2));
   yaw   = atan2f(Q1*Q2 + Q0*Q3, 0.5f - Q2*Q2 - Q3*Q3);
