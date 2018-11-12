@@ -70,7 +70,9 @@ invSqrt(float x)
   return y.f;
 }
 */
-float invSqrt(float x) {
+static inline float
+invSqrt(float x)
+{
   float halfx = 0.5f * x;
   float y = x;
   long i = *(long*)&y;
@@ -90,6 +92,56 @@ float_zero(float x)
     return true;
   }
   return false;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//
+// quaternion related
+//
+////////////////////////////////////////////////////////////////////////////////
+static inline void
+quaternion_conjugate(const float q[4], float conj[4])
+{
+  conj[0] =   q[0];
+  conj[1] =  -q[1];
+  conj[2] =  -q[2];
+  conj[3] =  -q[3];
+}
+
+static inline void
+quaternion_multiply(const float a[4], const float b[4], float result[4])
+{
+  float r[4];
+
+  r[0] = a[0] * b[0] - a[1] * b[1] - a[2] * b[2] - a[3] * b[3];
+  r[1] = a[0] * b[1] + a[1] * b[0] + a[2] * b[3] - a[3] * b[2];
+  r[2] = a[0] * b[2] - a[1] * b[3] + a[2] * b[0] + a[3] * b[1];
+  r[3] = a[0] * b[3] + a[1] * b[2] - a[2] * b[1] + a[3] * b[0];
+
+  result[0] = r[0];
+  result[1] = r[1];
+  result[2] = r[2];
+  result[3] = r[3];
+}
+
+static inline void
+quaternion_rotate_invert(const float q[4], const float org[3], float result[3])
+{
+  float     vq[4];
+  float     q_conj[4];
+
+  vq[0] = 0;
+  vq[1] = org[0];
+  vq[2] = org[1];
+  vq[3] = org[2];
+
+  quaternion_conjugate(q, q_conj);
+  quaternion_multiply(q, vq, vq);
+  quaternion_multiply(vq, q_conj, vq);
+
+  result[0] = vq[1];
+  result[1] = vq[2];
+  result[2] = vq[3];
 }
 
 #endif //!__MATH_HELPER_DEF_H__
