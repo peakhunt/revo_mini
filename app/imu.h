@@ -18,8 +18,8 @@ typedef struct
 
 extern int16_t           attitude[3];
 extern int16_t           accel_ned[3],
-                         gyro_ned[3],
                          mag_ned[3];
+extern float             gyro_ned[3];
 
 extern void imu_init(void);
 extern imu_t* imu_get(void);

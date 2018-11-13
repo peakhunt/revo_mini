@@ -4,7 +4,8 @@
 #include "mainloop_timer.h"
 #include "sensor_calib.h"
 
-#define MAGNETOMETER_CALIBRATE_SAMPLE_COUNT           (10*90)     // 10 samples for 90 seconds
+#define SAMPLE_INTERVAL   100
+#define MAGNETOMETER_CALIBRATE_SAMPLE_COUNT           (10*60)     // 10 samples for 60 seconds
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -31,6 +32,9 @@ static sensor_align_t   _align;
 int16_t                 mag_raw[3];
 int16_t                 mag_value[3];
 int16_t                 mag_offset[3];
+#ifdef MAGNETO_CAL_SCALE
+float                   mag_scale[3] = { 1.0f, 1.0f, 1.0f};
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -38,8 +42,13 @@ int16_t                 mag_offset[3];
 //
 ////////////////////////////////////////////////////////////////////////////////
 static bool             _mag_calib_in_prog;
+#ifndef MAGNETO_CAL_SCALE
 static int16_t          _mag_prev[3];
 static sensor_calib_t   _cal_state;
+#else
+static int16_t          _mag_min[3],
+                        _mag_max[3];
+#endif
 static uint32_t         _mag_cal_sample_count;
 
 static magneto_calibrate_callback   _cb;
@@ -55,13 +64,19 @@ mag_sample_timer_callback(SoftTimerElem* te)
 {
   hmc5883_read(&_mag, mag_raw);
 
+#ifndef MAGNETO_CAL_SCALE
   mag_value[0] = mag_raw[0] - mag_offset[0];
   mag_value[1] = mag_raw[1] - mag_offset[1];
   mag_value[2] = mag_raw[2] - mag_offset[2];
+#else
+  mag_value[0] = (mag_raw[0] - mag_offset[0]) * mag_scale[0];
+  mag_value[1] = (mag_raw[1] - mag_offset[1]) * mag_scale[1];
+  mag_value[2] = (mag_raw[2] - mag_offset[2]) * mag_scale[2];
+#endif
 
   sensor_align_values(mag_value, _align);
 
-  mainloop_timer_schedule(&_sample_timer, 100);
+  mainloop_timer_schedule(&_sample_timer, SAMPLE_INTERVAL);
 
   if(_mag_calib_in_prog)
   {
@@ -85,7 +100,7 @@ magneto_init(sensor_align_t align)
 void
 magneto_start(void)
 {
-  mainloop_timer_schedule(&_sample_timer, 100);
+  mainloop_timer_schedule(&_sample_timer, SAMPLE_INTERVAL);
 }
 
 void
@@ -102,6 +117,7 @@ magneto_stop(void)
 static void
 mag_calib_update(int16_t mx, int16_t my, int16_t mz)
 {
+#ifndef MAGNETO_CAL_SCALE
   float     diffMag = 0;
   float     avgMag = 0;
   int32_t   mag_data[3];
@@ -141,6 +157,47 @@ mag_calib_update(int16_t mx, int16_t my, int16_t mz)
 
     _cb(mag_offset, _cb_arg);
   }
+#else
+  int16_t   m[3];
+
+  _mag_cal_sample_count++;
+
+  m[0] = mx;
+  m[1] = my;
+  m[2] = mz;
+
+  for(int i = 0; i < 3; i++)
+  {
+    if(m[i] < _mag_min[i])
+    {
+      _mag_min[i] = m[i];
+    }
+
+    if(m[i] > _mag_max[i])
+    {
+      _mag_max[i] = m[i];
+    }
+  }
+
+  if(_mag_cal_sample_count > MAGNETOMETER_CALIBRATE_SAMPLE_COUNT)
+  {
+    int16_t   diff,
+              off;
+
+    for(int i = 0; i < 3; i++)
+    {
+      diff = _mag_max[i] - _mag_min[i];
+      off  = _mag_max[i] - diff / 2;
+
+      mag_offset[i] = off;
+      mag_scale[i] = 10000.0f / diff;
+    }
+    
+    _mag_calib_in_prog = false;
+
+    _cb(mag_offset, _cb_arg);
+  }
+#endif
 }
 
 bool
@@ -154,11 +211,16 @@ magneto_calibrate(magneto_calibrate_callback cb, void* cb_arg)
   _cb     = cb;
   _cb_arg = cb_arg;
 
+#ifndef MAGNETO_CAL_SCALE
   _mag_prev[0] = 
   _mag_prev[1] = 
   _mag_prev[2] =  0;
 
   sensorCalibrationResetState(&_cal_state);
+#else
+  _mag_min[0] = _mag_min[1] = _mag_min[2] = 32764;
+  _mag_max[0] = _mag_max[1] = _mag_max[2] =-32763;
+#endif
 
   _mag_calib_in_prog = true;
   _mag_cal_sample_count = 0;

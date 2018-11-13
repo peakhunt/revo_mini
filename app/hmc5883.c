@@ -60,20 +60,20 @@ hmc5883_set_mag_gain(hmc5883Mag* mag, hmc5883MagGain gain)
 {
   //
   // cra setup
-  // 7    : 0       , no temperature sensor
-  // 6/5  : 00,     , 1 sample per measure
-  // 4/2  : 111     , 220 Hz output rate
+  // 7    : 0       
+  // 6/5  : 11,     , 8 sample per measure
+  // 4/2  : 110     , 75 Hz output rate
   // 1/0  : 00      , normal
-  hmc5883_write_reg(mag, HMC5883_REGISTER_MAG_CRA_REG_M, 0x1c);
+  hmc5883_write_reg(mag, HMC5883_REGISTER_MAG_CRA_REG_M, 0x78);
 
   //
   // crb setup
   // gain 
-  // hmc5883_write_reg(mag, HMC5883_REGISTER_MAG_CRB_REG_M, gain);
+  hmc5883_write_reg(mag, HMC5883_REGISTER_MAG_CRB_REG_M, gain);
 
   // mode register
   // continuous measure mode
-  hmc5883_write_reg(mag, HMC5883_REGISTER_MAG_MR_REG_M, 0);
+  // hmc5883_write_reg(mag, HMC5883_REGISTER_MAG_MR_REG_M, 0);
 }
 
 void

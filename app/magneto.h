@@ -7,6 +7,9 @@
 extern int16_t mag_raw[3];
 extern int16_t mag_value[3];
 extern int16_t mag_offset[3];
+#ifdef MAGNETO_CAL_SCALE
+extern float mag_scale[3];
+#endif
 
 extern void magneto_init(sensor_align_t align);
 extern void magneto_start(void);

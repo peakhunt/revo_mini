@@ -178,6 +178,8 @@ CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
 
 CFLAGS += -Werror
 
+# CFLAGS += -DMAGNETO_CAL_SCALE
+
 
 #######################################
 # LDFLAGS

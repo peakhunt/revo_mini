@@ -30,7 +30,7 @@ typedef struct
   float       z;
 } VectorFloat;
 
-#if 0 // original
+#if 1 // original
 static inline float
 invSqrt(float x)
 {
@@ -92,6 +92,33 @@ float_zero(float x)
     return true;
   }
   return false;
+}
+
+#define sq(x) ((x)*(x))
+
+static inline float
+vector_norm_squared(const float v[3])
+{
+    return sq(v[0]) + sq(v[1]) + sq(v[2]);
+}
+
+static inline void
+vector_normalize(const float v[3], float result[3])
+{
+  float length = sqrtf(vector_norm_squared(v));
+  
+  if(length != 0)
+  {
+    result[0] = v[0] / length;
+    result[1] = v[1] / length;
+    result[2] = v[2] / length;
+  }
+  else
+  {
+    result[0] = 0.0f;
+    result[1] = 0.0f;
+    result[2] = 0.0f;
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
