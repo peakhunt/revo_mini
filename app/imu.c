@@ -20,9 +20,9 @@ static imu_t            _imu;
 static SoftTimerElem    _sample_timer;
 int16_t                 attitude[3];
 
-int16_t                 accel_ned[3],
-                        mag_ned[3];
-float                   gyro_ned[3];
+int16_t                 accel_body[3],
+                        mag_body[3];
+float                   gyro_body[3];
 
 /*
   
@@ -44,11 +44,11 @@ float                   gyro_ned[3];
   
             X (North, Roll)
             |
-          ----->
-      |     |
+         ------>
+     /\     |
       |     |
    -- |---- | 
-     \/
+      |
     z+ (heading) CCW
    
    But roll/pitch/yaw is calculated using NED aircraft coordinate
@@ -63,43 +63,43 @@ float                   gyro_ned[3];
    according to the required coordinate system.
   
 */
-static void imu_nwu_aling(imu_t* imu)
+static void imu_body_aling(imu_t* imu)
 {
   /*
-  accel_ned[0]  = accel_value[1];
-  accel_ned[1]  = accel_value[0];
-  accel_ned[2]  = accel_value[2];
+  accel_body[0]  = accel_value[1];
+  accel_body[1]  = accel_value[0];
+  accel_body[2]  = accel_value[2];
 
-  gyro_ned[0]   = -gyro_dps[1];
-  gyro_ned[1]   = -gyro_dps[0];
-  gyro_ned[2]   = -gyro_dps[2];
+  gyro_body[0]   = -gyro_dps[1];
+  gyro_body[1]   = -gyro_dps[0];
+  gyro_body[2]   = -gyro_dps[2];
 
-  mag_ned[0]    = mag_value[1];
-  mag_ned[1]    = mag_value[0];
-  mag_ned[2]    = mag_value[2];
+  mag_body[0]    = mag_value[1];
+  mag_body[1]    = mag_value[0];
+  mag_body[2]    = mag_value[2];
   */
-  accel_ned[0]  = accel_value[1];
-  accel_ned[1]  =-accel_value[0];
-  accel_ned[2]  = accel_value[2];
+  accel_body[0]  = accel_value[1];
+  accel_body[1]  =-accel_value[0];
+  accel_body[2]  = accel_value[2];
 
-  gyro_ned[0]   = gyro_dps[1];
-  gyro_ned[1]   =-gyro_dps[0];
-  gyro_ned[2]   = gyro_dps[2];
+  gyro_body[0]   = gyro_dps[1];
+  gyro_body[1]   =-gyro_dps[0];
+  gyro_body[2]   = gyro_dps[2];
 
-  mag_ned[0]    = mag_value[1];
-  mag_ned[1]    =-mag_value[0];
-  mag_ned[2]    = mag_value[2];
+  mag_body[0]    = mag_value[1];
+  mag_body[1]    =-mag_value[0];
+  mag_body[2]    = mag_value[2];
 }
 
 static void
 imu_run(imu_t* imu)
 {
-  imu_nwu_aling(imu);
+  imu_body_aling(imu);
 
   madgwick_update(&imu->filter,
-      gyro_ned[0],    gyro_ned[1],    gyro_ned[2],
-      accel_ned[0],   accel_ned[1],   accel_ned[2],
-      mag_ned[0],     mag_ned[1],     mag_ned[2]);
+      gyro_body[0],    gyro_body[1],    gyro_body[2],
+      accel_body[0],   accel_body[1],   accel_body[2],
+      mag_body[0],     mag_body[1],     mag_body[2]);
 
   madgwick_get_roll_pitch_yaw(&imu->filter,
       attitude, 0.0f);

@@ -311,9 +311,9 @@ shell_command_mag(ShellIntf* intf, int argc, const char** argv)
   shell_printf(intf, "MX : %d\r\n", mag_value[0]);
   shell_printf(intf, "MY : %d\r\n", mag_value[1]);
   shell_printf(intf, "MZ : %d\r\n", mag_value[2]);
-  shell_printf(intf, "MXN: %d\r\n", mag_ned[0]);
-  shell_printf(intf, "MYN: %d\r\n", mag_ned[1]);
-  shell_printf(intf, "MZN: %d\r\n", mag_ned[2]);
+  shell_printf(intf, "MXN: %d\r\n", mag_body[0]);
+  shell_printf(intf, "MYN: %d\r\n", mag_body[1]);
+  shell_printf(intf, "MZN: %d\r\n", mag_body[2]);
 }
 
 static void
@@ -323,9 +323,9 @@ shell_command_gyro(ShellIntf* intf, int argc, const char** argv)
   shell_printf(intf, "GX : %d\r\n", gyro_value[0]);
   shell_printf(intf, "GY : %d\r\n", gyro_value[1]);
   shell_printf(intf, "GZ : %d\r\n", gyro_value[2]);
-  shell_printf(intf, "GXN: %.2f\r\n", gyro_ned[0]);
-  shell_printf(intf, "GYN: %.2f\r\n", gyro_ned[1]);
-  shell_printf(intf, "GZN: %.2f\r\n", gyro_ned[2]);
+  shell_printf(intf, "GXN: %.2f\r\n", gyro_body[0]);
+  shell_printf(intf, "GYN: %.2f\r\n", gyro_body[1]);
+  shell_printf(intf, "GZN: %.2f\r\n", gyro_body[2]);
 }
 
 static void
@@ -335,9 +335,9 @@ shell_command_accel(ShellIntf* intf, int argc, const char** argv)
   shell_printf(intf, "AX : %d\r\n", accel_value[0]);
   shell_printf(intf, "AY : %d\r\n", accel_value[1]);
   shell_printf(intf, "AZ : %d\r\n", accel_value[2]);
-  shell_printf(intf, "AXN: %d\r\n", accel_ned[0]);
-  shell_printf(intf, "AYN: %d\r\n", accel_ned[1]);
-  shell_printf(intf, "AZN: %d\r\n", accel_ned[2]);
+  shell_printf(intf, "AXN: %d\r\n", accel_body[0]);
+  shell_printf(intf, "AYN: %d\r\n", accel_body[1]);
+  shell_printf(intf, "AZN: %d\r\n", accel_body[2]);
 }
 
 static void
