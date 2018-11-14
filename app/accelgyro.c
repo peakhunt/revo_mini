@@ -6,6 +6,7 @@
 
 #include "micros.h"
 #include "sensor_calib.h"
+#include "config.h"
 
 #define ACCELGYRO_ACCEL_CALIBRATE_SAMPLE_COUNT        20000
 #define ACCELGYRO_GYRO_CALIBRATE_SAMPLE_COUNT         20000
@@ -41,13 +42,10 @@ static sensor_align_t   _aalign, _galign;
 ////////////////////////////////////////////////////////////////////////////////
 int16_t accel_raw[3];
 int16_t accel_value[3];
-int16_t accel_gain[3] = { ACCELGYRO_1G_VALUE, ACCELGYRO_1G_VALUE, ACCELGYRO_1G_VALUE};
-int16_t accel_offset[3];
 
 int16_t gyro_raw[3];
 int16_t gyro_value[3];
 float   gyro_dps[3];
-int16_t gyro_offset[3];
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -87,14 +85,14 @@ accgyro_sample_timer_callback(SoftTimerElem* te)
   mainloop_timer_schedule(&_sample_timer, 1);
   _sample_count++;
 
-  accel_value[0] = (accel_raw[0] - accel_offset[0]) * accel_gain[0] / ACCELGYRO_1G_VALUE;
-  accel_value[1] = (accel_raw[1] - accel_offset[1]) * accel_gain[1] / ACCELGYRO_1G_VALUE;
-  accel_value[2] = (accel_raw[2] - accel_offset[2]) * accel_gain[2] / ACCELGYRO_1G_VALUE;
+  accel_value[0] = (accel_raw[0] - GCFG->accel_offset[0]) * GCFG->accel_gain[0] / ACCELGYRO_1G_VALUE;
+  accel_value[1] = (accel_raw[1] - GCFG->accel_offset[1]) * GCFG->accel_gain[1] / ACCELGYRO_1G_VALUE;
+  accel_value[2] = (accel_raw[2] - GCFG->accel_offset[2]) * GCFG->accel_gain[2] / ACCELGYRO_1G_VALUE;
   sensor_align_values(accel_value, _aalign);
 
-  gyro_value[0] = gyro_raw[0] - gyro_offset[0];
-  gyro_value[1] = gyro_raw[1] - gyro_offset[1];
-  gyro_value[2] = gyro_raw[2] - gyro_offset[2];
+  gyro_value[0] = gyro_raw[0] - GCFG->gyro_offset[0];
+  gyro_value[1] = gyro_raw[1] - GCFG->gyro_offset[1];
+  gyro_value[2] = gyro_raw[2] - GCFG->gyro_offset[2];
   sensor_align_values(gyro_value, _galign);
 
   gyro_dps[0] = gyro_value[0] * ACCELGYRO_GYRO_LSB;
@@ -172,13 +170,13 @@ accgyro_gyro_cal_update(int16_t gx, int16_t gy, int16_t gz)
 
   if(_gyro_cal_sum_count > ACCELGYRO_GYRO_CALIBRATE_SAMPLE_COUNT)
   {
-    gyro_offset[0] = (int16_t)(_gyro_sum[0] / _gyro_cal_sum_count);
-    gyro_offset[1] = (int16_t)(_gyro_sum[1] / _gyro_cal_sum_count);
-    gyro_offset[2] = (int16_t)(_gyro_sum[2] / _gyro_cal_sum_count);
+    GCFG->gyro_offset[0] = (int16_t)(_gyro_sum[0] / _gyro_cal_sum_count);
+    GCFG->gyro_offset[1] = (int16_t)(_gyro_sum[1] / _gyro_cal_sum_count);
+    GCFG->gyro_offset[2] = (int16_t)(_gyro_sum[2] / _gyro_cal_sum_count);
 
     _gyro_cal_in_prog = false;
 
-    _gyro_cal_cb(gyro_offset, _gyro_cal_cb_arg);
+    _gyro_cal_cb(GCFG->gyro_offset, _gyro_cal_cb_arg);
   }
 }
 
@@ -266,9 +264,9 @@ accgyro_accel_cal_finish(void)
   }
   sensorCalibrationSolveForOffset(&cal_state, tmp);
 
-  accel_offset[X] = lrintf(tmp[X]);
-  accel_offset[Y] = lrintf(tmp[Y]);
-  accel_offset[Z] = lrintf(tmp[Z]);
+  GCFG->accel_offset[X] = lrintf(tmp[X]);
+  GCFG->accel_offset[Y] = lrintf(tmp[Y]);
+  GCFG->accel_offset[Z] = lrintf(tmp[Z]);
 
   // gain
   sensorCalibrationResetState(&cal_state);
@@ -277,9 +275,9 @@ accgyro_accel_cal_finish(void)
   {
     int32_t samples[3];
 
-    samples[X] = _accel_cal_sum[axis][X] - accel_offset[X];
-    samples[Y] = _accel_cal_sum[axis][Y] - accel_offset[Y];
-    samples[Z] = _accel_cal_sum[axis][Z] - accel_offset[Z];
+    samples[X] = _accel_cal_sum[axis][X] - GCFG->accel_offset[X];
+    samples[Y] = _accel_cal_sum[axis][Y] - GCFG->accel_offset[Y];
+    samples[Z] = _accel_cal_sum[axis][Z] - GCFG->accel_offset[Z];
 
     //
     // accelerometer is seto to +- 8G. 
@@ -291,11 +289,11 @@ accgyro_accel_cal_finish(void)
 
   for (int axis = 0; axis < 3; axis++) 
   {
-    accel_gain[axis] = lrintf(tmp[axis] * ACCELGYRO_1G_VALUE);
+    GCFG->accel_gain[axis] = lrintf(tmp[axis] * ACCELGYRO_1G_VALUE);
   }
 
   _accel_cal_in_prog = false;
-  _accel_cal_done_cb(accel_offset, accel_gain, _accel_cal_cb_arg);
+  _accel_cal_done_cb(GCFG->accel_offset, GCFG->accel_gain, _accel_cal_cb_arg);
 }
 
 static void

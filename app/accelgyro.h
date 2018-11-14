@@ -19,12 +19,9 @@
 
 extern int16_t accel_raw[3];
 extern int16_t accel_value[3];
-extern int16_t accel_gain[3];
-extern int16_t accel_offset[3];
 extern int16_t gyro_raw[3];
 extern int16_t gyro_value[3];
 extern float gyro_dps[3];
-extern int16_t gyro_offset[3];
 
 extern void accelgyro_init(sensor_align_t aalign, sensor_align_t galign);
 extern void accelgyro_start(void);

@@ -3,6 +3,7 @@
 #include "hmc5883.h"
 #include "mainloop_timer.h"
 #include "sensor_calib.h"
+#include "config.h"
 
 #define SAMPLE_INTERVAL   100
 #define MAGNETOMETER_CALIBRATE_SAMPLE_COUNT           (10*60)     // 10 samples for 60 seconds
@@ -31,10 +32,6 @@ static sensor_align_t   _align;
 ////////////////////////////////////////////////////////////////////////////////
 int16_t                 mag_raw[3];
 int16_t                 mag_value[3];
-int16_t                 mag_offset[3];
-#ifdef MAGNETO_CAL_SCALE
-float                   mag_scale[3] = { 1.0f, 1.0f, 1.0f};
-#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -65,13 +62,13 @@ mag_sample_timer_callback(SoftTimerElem* te)
   hmc5883_read(&_mag, mag_raw);
 
 #ifndef MAGNETO_CAL_SCALE
-  mag_value[0] = mag_raw[0] - mag_offset[0];
-  mag_value[1] = mag_raw[1] - mag_offset[1];
-  mag_value[2] = mag_raw[2] - mag_offset[2];
+  mag_value[0] = mag_raw[0] - GCFG->mag_offset[0];
+  mag_value[1] = mag_raw[1] - GCFG->mag_offset[1];
+  mag_value[2] = mag_raw[2] - GCFG->mag_offset[2];
 #else
-  mag_value[0] = (mag_raw[0] - mag_offset[0]) * mag_scale[0];
-  mag_value[1] = (mag_raw[1] - mag_offset[1]) * mag_scale[1];
-  mag_value[2] = (mag_raw[2] - mag_offset[2]) * mag_scale[2];
+  mag_value[0] = (mag_raw[0] - GCFG->mag_offset[0]) * GCFG->mag_scale[0];
+  mag_value[1] = (mag_raw[1] - GCFG->mag_offset[1]) * GCFG->mag_scale[1];
+  mag_value[2] = (mag_raw[2] - GCFG->mag_offset[2]) * GCFG->mag_scale[2];
 #endif
 
   sensor_align_values(mag_value, _align);
@@ -150,12 +147,12 @@ mag_calib_update(int16_t mx, int16_t my, int16_t mz)
 
     for (int axis = 0; axis < 3; axis++)
     {
-      mag_offset[axis] = lrintf(magZerof[axis]);
+      GCFG->mag_offset[axis] = lrintf(magZerof[axis]);
     }
 
     _mag_calib_in_prog = false;
 
-    _cb(mag_offset, _cb_arg);
+    _cb(GCFG->mag_offset, _cb_arg);
   }
 #else
   int16_t   m[3];
@@ -189,13 +186,13 @@ mag_calib_update(int16_t mx, int16_t my, int16_t mz)
       diff = _mag_max[i] - _mag_min[i];
       off  = _mag_max[i] - diff / 2;
 
-      mag_offset[i] = off;
-      mag_scale[i] = 10000.0f / diff;
+      GCFG->mag_offset[i] = off;
+      GCFG->mag_scale[i] = 10000.0f / diff;
     }
     
     _mag_calib_in_prog = false;
 
-    _cb(mag_offset, _cb_arg);
+    _cb(GCFG->mag_offset, _cb_arg);
   }
 #endif
 }

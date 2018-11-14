@@ -15,6 +15,7 @@
 #include "magneto.h"
 #include "micros.h"
 #include "imu.h"
+#include "config.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -57,6 +58,7 @@ static void shell_command_gyro(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_accel(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_attitude(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_cal_show(ShellIntf* intf, int argc, const char** argv);
+static void shell_command_save(ShellIntf* intf, int argc, const char** argv);
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -151,6 +153,11 @@ static ShellCommand     _commands[] =
     "cal_show",
     "show calibration values",
     shell_command_cal_show,
+  },
+  {
+    "save",
+    "save configuration parameters",
+    shell_command_save,
   }
 };
 
@@ -360,26 +367,32 @@ shell_command_cal_show(ShellIntf* intf, int argc, const char** argv)
 {
   shell_printf(intf, "\r\n");
 
-  shell_printf(intf, "AX Offset  : %d\r\n", accel_offset[0]);
-  shell_printf(intf, "AY Offset  : %d\r\n", accel_offset[1]);
-  shell_printf(intf, "AZ Offset  : %d\r\n", accel_offset[2]);
-  shell_printf(intf, "AX Gain    : %d\r\n", accel_gain[0]);
-  shell_printf(intf, "AY Gain    : %d\r\n", accel_gain[1]);
-  shell_printf(intf, "AZ Gain    : %d\r\n", accel_gain[2]);
+  shell_printf(intf, "AX Offset  : %d\r\n", GCFG->accel_offset[0]);
+  shell_printf(intf, "AY Offset  : %d\r\n", GCFG->accel_offset[1]);
+  shell_printf(intf, "AZ Offset  : %d\r\n", GCFG->accel_offset[2]);
+  shell_printf(intf, "AX Gain    : %d\r\n", GCFG->accel_gain[0]);
+  shell_printf(intf, "AY Gain    : %d\r\n", GCFG->accel_gain[1]);
+  shell_printf(intf, "AZ Gain    : %d\r\n", GCFG->accel_gain[2]);
 
-  shell_printf(intf, "GX Offset  : %d\r\n", gyro_offset[0]);
-  shell_printf(intf, "GY Offset  : %d\r\n", gyro_offset[1]);
-  shell_printf(intf, "GZ Offset  : %d\r\n", gyro_offset[2]);
+  shell_printf(intf, "GX Offset  : %d\r\n", GCFG->gyro_offset[0]);
+  shell_printf(intf, "GY Offset  : %d\r\n", GCFG->gyro_offset[1]);
+  shell_printf(intf, "GZ Offset  : %d\r\n", GCFG->gyro_offset[2]);
 
-  shell_printf(intf, "MX Offset  : %d\r\n", mag_offset[0]);
-  shell_printf(intf, "MY Offset  : %d\r\n", mag_offset[1]);
-  shell_printf(intf, "MZ Offset  : %d\r\n", mag_offset[2]);
+  shell_printf(intf, "MX Offset  : %d\r\n", GCFG->mag_offset[0]);
+  shell_printf(intf, "MY Offset  : %d\r\n", GCFG->mag_offset[1]);
+  shell_printf(intf, "MZ Offset  : %d\r\n", GCFG->mag_offset[2]);
 
 #ifdef MAGNETO_CAL_SCALE
-  shell_printf(intf, "MX Scale   : %.2f\r\n", mag_scale[0]);
-  shell_printf(intf, "MY Scale   : %.2f\r\n", mag_scale[1]);
-  shell_printf(intf, "MZ Scale   : %.2f\r\n", mag_scale[2]);
+  shell_printf(intf, "MX Scale   : %.2f\r\n", GCFG->mag_scale[0]);
+  shell_printf(intf, "MY Scale   : %.2f\r\n", GCFG->mag_scale[1]);
+  shell_printf(intf, "MZ Scale   : %.2f\r\n", GCFG->mag_scale[2]);
 #endif
+}
+
+static void
+shell_command_save(ShellIntf* intf, int argc, const char** argv)
+{
+  config_save();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

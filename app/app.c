@@ -10,6 +10,7 @@
 #include "magneto.h"
 #include "micros.h"
 #include "imu.h"
+#include "config.h"
 
 void
 app_init_f(void)
@@ -21,6 +22,8 @@ app_init_f(void)
 void
 app_init(void)
 {
+  config_init();
+
   __disable_irq();
   shell_init();
   __enable_irq();
