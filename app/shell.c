@@ -15,6 +15,7 @@
 #include "magneto.h"
 #include "micros.h"
 #include "imu.h"
+#include "rx.h"
 #include "config.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -58,6 +59,7 @@ static void shell_command_gyro(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_accel(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_attitude(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_cal_show(ShellIntf* intf, int argc, const char** argv);
+static void shell_command_rx(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_save(ShellIntf* intf, int argc, const char** argv);
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -153,6 +155,11 @@ static ShellCommand     _commands[] =
     "cal_show",
     "show calibration values",
     shell_command_cal_show,
+  },
+  {
+    "rx",
+    "show rx command status",
+    shell_command_rx,
   },
   {
     "save",
@@ -387,6 +394,17 @@ shell_command_cal_show(ShellIntf* intf, int argc, const char** argv)
   shell_printf(intf, "MY Scale   : %.2f\r\n", GCFG->mag_scale[1]);
   shell_printf(intf, "MZ Scale   : %.2f\r\n", GCFG->mag_scale[2]);
 #endif
+}
+
+static void
+shell_command_rx(ShellIntf* intf, int argc, const char** argv)
+{
+  shell_printf(intf, "\r\n");
+  shell_printf(intf, "Status     : %s\r\n", rx_status() == true ? "OK" : "FAIL");
+  for(int i = 0; i < RX_MAX_CHANNELS; i++)
+  {
+    shell_printf(intf, "RX-%02d    : %u\r\n", i, rx_cmd[i]);
+  }
 }
 
 static void

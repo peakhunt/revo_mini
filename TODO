@@ -1,4 +1,5 @@
 a) ibus RX receiver
-b) barometer
-c) SPI flash
+b) GPS receiver
+c) barometer
+d) SPI flash
 e) advanced magnetometer calibration

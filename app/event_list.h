@@ -5,4 +5,6 @@
 
 #define DISPATCH_EVENT_USB_CLI_RX           9
 
+#define DISPATCH_EVENT_RC_RX                10
+
 #endif //!__EVENT_LIST_DEF_H__

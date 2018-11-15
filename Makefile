@@ -98,7 +98,9 @@ app/magneto.c \
 app/madgwick.c \
 app/sensor_calib.c \
 app/imu.c \
-app/config.c
+app/config.c \
+app/ibus.c \
+app/rx.c \
 
 APP_INCLUDES = \
 -Iapp

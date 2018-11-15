@@ -8,6 +8,10 @@
 #include "tim.h"
 #include "micros.h"
 
+#include "usart.h"
+
+#include "ibus.h"
+
 volatile uint32_t     __uptime  = 0;
 volatile uint32_t     __msec    = 0;
 
@@ -32,5 +36,14 @@ HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   if(htim == &htim7)
   {
     micros_update_callback();
+  }
+}
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+  if(huart == &huart1)
+  {
+    ibus_rx_callback(huart);
+    return;
   }
 }
