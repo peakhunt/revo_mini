@@ -187,7 +187,7 @@ mag_calib_update(int16_t mx, int16_t my, int16_t mz)
       off  = _mag_max[i] - diff / 2;
 
       GCFG->mag_offset[i] = off;
-      GCFG->mag_scale[i] = 10000.0f / diff;
+      GCFG->mag_scale[i] = 1000.0f / (diff/2.0f);
     }
     
     _mag_calib_in_prog = false;
