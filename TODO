@@ -1,5 +1,5 @@
 a) ibus RX receiver
 b) GPS receiver
-c) barometer
-d) SPI flash
-e) advanced magnetometer calibration
+c) SPI flash
+d) advanced magnetometer calibration
+e) PID controller - angle mode
