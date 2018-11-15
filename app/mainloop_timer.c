@@ -51,3 +51,13 @@ mainloop_timer_cancel(SoftTimerElem* elem)
 {
   soft_timer_del(&_mainloop_timer, elem);
 }
+
+void
+mainloop_timer_reschedule(SoftTimerElem* elem, int expires)
+{
+  if(is_soft_timer_running(elem))
+  {
+    mainloop_timer_cancel(elem);
+  }
+  mainloop_timer_schedule(elem, expires);
+}

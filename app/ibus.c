@@ -121,11 +121,7 @@ ibus_rx_received(uint32_t event)
 
   ibus->rx_ok = true;
 
-  if(is_soft_timer_running(&ibus->rx_ok_timer))
-  {
-    mainloop_timer_cancel(&ibus->rx_ok_timer);
-  }
-  mainloop_timer_schedule(&ibus->rx_ok_timer, 2000);
+  mainloop_timer_reschedule(&ibus->rx_ok_timer, 2000);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
