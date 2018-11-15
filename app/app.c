@@ -11,6 +11,7 @@
 #include "micros.h"
 #include "imu.h"
 #include "rx.h"
+#include "baro.h"
 #include "config.h"
 
 void
@@ -43,6 +44,9 @@ app_start(void)
 
   magneto_init(sensor_align_cw_0);
   magneto_start();
+
+  baro_init();
+  baro_start();
 
   rx_init();
 

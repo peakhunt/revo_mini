@@ -101,6 +101,8 @@ app/imu.c \
 app/config.c \
 app/ibus.c \
 app/rx.c \
+app/baro.c \
+app/ms5611.c
 
 APP_INCLUDES = \
 -Iapp
