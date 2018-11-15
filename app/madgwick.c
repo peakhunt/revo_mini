@@ -224,7 +224,7 @@ madgwick_get_roll_pitch_yaw(madgwick_t* madgwick, int16_t data[3], float md)
 
   roll  = roll * 57.29578f;
   pitch = pitch * 57.29578f;
-  yaw   = yaw * 57.29578f + md;
+  yaw   = yaw * 57.29578f + md/10.0f;
 
   if (yaw < 0.0f)
   {

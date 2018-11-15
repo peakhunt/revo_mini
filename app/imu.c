@@ -8,6 +8,7 @@
 #include "mainloop_timer.h"
 
 #include "math_helper.h"
+#include "config.h"
 
 #define IMU_SAMPLE_FREQ       1000
 
@@ -102,7 +103,7 @@ imu_run(imu_t* imu)
       mag_body[0],     mag_body[1],     mag_body[2]);
 
   madgwick_get_roll_pitch_yaw(&imu->filter,
-      attitude, 0.0f);
+      attitude, GCFG->mag_decl);
 }
 
 static void

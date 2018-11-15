@@ -62,6 +62,7 @@ static void shell_command_attitude(ShellIntf* intf, int argc, const char** argv)
 static void shell_command_cal_show(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_rx(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_baro(ShellIntf* intf, int argc, const char** argv);
+static void shell_command_mag_decl(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_save(ShellIntf* intf, int argc, const char** argv);
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -167,6 +168,11 @@ static ShellCommand     _commands[] =
     "baro",
     "show barometer status",
     shell_command_baro,
+  },
+  {
+    "mag_decl",
+    "set magnetic declination",
+    shell_command_mag_decl,
   },
   {
     "save",
@@ -424,6 +430,22 @@ shell_command_baro(ShellIntf* intf, int argc, const char** argv)
   shell_printf(intf, "Baro Ground Pressure  : %.2f\r\n", baroGroundPressure);
   shell_printf(intf, "Baro Ground Altitude  : %.2f\r\n", baroGroundAltitude);
   shell_printf(intf, "Baro Altitude         : %ld\r\n", baroAltitude);
+}
+
+static void
+shell_command_mag_decl(ShellIntf* intf, int argc, const char** argv)
+{
+  shell_printf(intf, "\r\n");
+
+  if(argc != 2)
+  {
+    shell_printf(intf, "MAG Decl in deci degree: %d\r\n", GCFG->mag_decl);
+    return;
+  }
+
+  GCFG->mag_decl = atoi(argv[1]);
+
+  shell_printf(intf, "set MAG Decl to: %d\r\n", GCFG->mag_decl);
 }
 
 static void
