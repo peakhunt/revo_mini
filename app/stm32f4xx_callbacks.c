@@ -46,4 +46,11 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     ibus_rx_callback(huart);
     return;
   }
+  
+  // FIXME
+}
+
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef* huart)
+{
+  // FIXME
 }

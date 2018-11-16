@@ -12,6 +12,7 @@
 #include "imu.h"
 #include "rx.h"
 #include "baro.h"
+#include "gps.h"
 #include "config.h"
 
 void
@@ -49,6 +50,7 @@ app_start(void)
   baro_start();
 
   rx_init();
+  gps_init();
 
   imu_init();
 }
