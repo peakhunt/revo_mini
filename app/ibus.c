@@ -3,6 +3,8 @@
 #include "event_dispatcher.h"
 #include "event_list.h"
 
+#include "rx.h"
+
 #define IBUS_PUSH(ib, d)      \
   ib->rx_buf[ib->data_ndx++] = d
 
@@ -42,6 +44,7 @@ ibus_rx_data(ibus_t* ibus)
     // to send failsafe data if it is set up to do so
     // otherwise. it keeps sending previous data.
     //
+    rx_count++;
     for(int i = 0; i < IBUS_NUM_CHANNELS; i++)
     {
       ibus->chnl_data_ptr[i] = ibus->rx_buf[i * 2 + 2] |
@@ -49,6 +52,11 @@ ibus_rx_data(ibus_t* ibus)
     }
     event_set(1 << DISPATCH_EVENT_RC_RX);
   }
+  else
+  {
+    rx_crc_err++;
+  }
+
   ibus_reset_state(ibus);
 }
 
@@ -65,6 +73,7 @@ ibus_handle_rx(ibus_t* ibus, uint8_t data)
     }
     else
     {
+      rx_sync_err++;
       ibus_reset_state(ibus);
     }
     break;
@@ -77,6 +86,7 @@ ibus_handle_rx(ibus_t* ibus, uint8_t data)
     }
     else
     {
+      rx_sync_err++;
       ibus_reset_state(ibus);
     }
     break;
@@ -115,6 +125,7 @@ ibus_rx_ok_timeout(SoftTimerElem* te)
   ibus_t* ibus  = container_of(te, ibus_t, rx_ok_timer);
   ibus->rx_ok     = false;
   
+  rx_timeout++;
   ibus_reset_state(ibus);
 }
 

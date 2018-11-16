@@ -418,6 +418,11 @@ shell_command_rx(ShellIntf* intf, int argc, const char** argv)
   {
     shell_printf(intf, "RX-%02d    : %u\r\n", i, rx_cmd[i]);
   }
+
+  shell_printf(intf, "rx_count   : %lu\r\n", rx_count);
+  shell_printf(intf, "rx_timeout : %lu\r\n", rx_timeout);
+  shell_printf(intf, "rx_sync_err: %lu\r\n", rx_sync_err);
+  shell_printf(intf, "rx_crc_err : %lu\r\n", rx_crc_err);
 }
 
 static void
