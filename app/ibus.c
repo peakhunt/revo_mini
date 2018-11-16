@@ -37,6 +37,10 @@ ibus_rx_data(ibus_t* ibus)
     //
     // got valid data
     // udpate
+    // FIXME check failsafe data here
+    // if RF connection is lost, iBUS receiver seems
+    // to send failsafe data if it is set up to do so
+    // otherwise. it keeps sending previous data.
     //
     for(int i = 0; i < IBUS_NUM_CHANNELS; i++)
     {
