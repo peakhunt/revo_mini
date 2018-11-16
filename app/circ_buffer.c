@@ -14,9 +14,9 @@
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 static inline uint8_t
-__circ_buffer_enqueue(CircBuffer* cb, uint8_t* data, uint8_t size)
+__circ_buffer_enqueue(CircBuffer* cb, uint8_t* data, uint16_t size)
 {
-  uint8_t   i;
+  uint16_t   i;
   
   if((cb->num_bytes + size) > cb->capacity)
   {
@@ -34,9 +34,9 @@ __circ_buffer_enqueue(CircBuffer* cb, uint8_t* data, uint8_t size)
 }
 
 static inline uint8_t
-__circ_buffer_dequeue(CircBuffer* cb, uint8_t* data, uint8_t size)
+__circ_buffer_dequeue(CircBuffer* cb, uint8_t* data, uint16_t size)
 {
-  uint8_t i;
+  uint16_t i;
   
   if(cb->num_bytes < size)
   {
@@ -59,7 +59,7 @@ __circ_buffer_dequeue(CircBuffer* cb, uint8_t* data, uint8_t size)
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-circ_buffer_init(CircBuffer* cb, volatile uint8_t* buffer, uint8_t capacity,
+circ_buffer_init(CircBuffer* cb, volatile uint8_t* buffer, uint16_t capacity,
     circ_buf_enter_critical enter_critical,
     circ_buf_leave_critical leave_critical)
 {
@@ -74,7 +74,7 @@ circ_buffer_init(CircBuffer* cb, volatile uint8_t* buffer, uint8_t capacity,
 }
 
 uint8_t
-circ_buffer_enqueue(CircBuffer* cb, uint8_t* data, uint8_t size, uint8_t from_isr)
+circ_buffer_enqueue(CircBuffer* cb, uint8_t* data, uint16_t size, uint8_t from_isr)
 {
   uint8_t ret;
 
@@ -93,7 +93,7 @@ circ_buffer_enqueue(CircBuffer* cb, uint8_t* data, uint8_t size, uint8_t from_is
 }
 
 uint8_t
-circ_buffer_dequeue(CircBuffer* cb, uint8_t* data, uint8_t size, uint8_t from_isr)
+circ_buffer_dequeue(CircBuffer* cb, uint8_t* data, uint16_t size, uint8_t from_isr)
 {
   uint8_t ret;
 
