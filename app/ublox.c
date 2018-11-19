@@ -69,7 +69,7 @@ ublox_tx_irq(void)
 //
 ////////////////////////////////////////////////////////////////////////////////
 static void
-ublox__enter_critical(CircBuffer* cb)
+ublox_enter_critical(CircBuffer* cb)
 {
   NVIC_DisableIRQ(_irqn);
   __DSB();
@@ -236,11 +236,11 @@ void
 ublox_init(void)
 {
   circ_buffer_init(&_rx_circ, _rx_buf, UBLOX_MAX_PAYLOAD_SIZE,
-      ublox__enter_critical,
+      ublox_enter_critical,
       ublox_leave_critical);
 
   circ_buffer_init(&_tx_circ, _tx_buf, UBLOX_MAX_TX_BUF_SIZE,
-      ublox__enter_critical,
+      ublox_enter_critical,
       ublox_leave_critical);
 
   event_register_handler(ublox_rx_event, DISPATCH_EVENT_UBLOX_RX);
