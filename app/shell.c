@@ -17,6 +17,7 @@
 #include "imu.h"
 #include "rx.h"
 #include "baro.h"
+#include "gps.h"
 #include "config.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -63,6 +64,7 @@ static void shell_command_cal_show(ShellIntf* intf, int argc, const char** argv)
 static void shell_command_rx(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_baro(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_mag_decl(ShellIntf* intf, int argc, const char** argv);
+static void shell_command_gps(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_save(ShellIntf* intf, int argc, const char** argv);
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -173,6 +175,11 @@ static ShellCommand     _commands[] =
     "mag_decl",
     "set magnetic declination",
     shell_command_mag_decl,
+  },
+  {
+    "gps",
+    "show gps status",
+    shell_command_gps,
   },
   {
     "save",
@@ -451,6 +458,62 @@ shell_command_mag_decl(ShellIntf* intf, int argc, const char** argv)
   GCFG->mag_decl = atoi(argv[1]);
 
   shell_printf(intf, "set MAG Decl to: %d\r\n", GCFG->mag_decl);
+}
+
+static void
+shell_command_gps(ShellIntf* intf, int argc, const char** argv)
+{
+  static const char*    gps_state[] =
+  {
+    "configuring baud",
+    "configuring gps",
+    "receiving",
+  };
+  static const char*    gps_fix_type[] =
+  {
+    "No FIX",
+    "FIX 2D",
+    "FIX 3D",
+  };
+
+  shell_printf(intf, "\r\n");
+  shell_printf(intf, "RX Status     : %s\r\n", gps_data.flags.rx_receiving ? "OK" : "NOK");
+  shell_printf(intf, "GPS State     : %s\r\n", gps_state[gps_data.state]);
+  shell_printf(intf, "RX Bytes      : %ld\r\n", gps_data.rx_bytes);
+  shell_printf(intf, "RX Msgs       : %ld\r\n", gps_data.rx_msgs);
+  shell_printf(intf, "CRC Err       : %ld\r\n", gps_data.rx_crc_err);
+  shell_printf(intf, "Unsync Err    : %ld\r\n", gps_data.rx_unsync);
+  shell_printf(intf, "\r\n");
+  shell_printf(intf, "Lattitude     : %ld\r\n", gps_data.llh.lat);
+  shell_printf(intf, "Longitude     : %ld\r\n", gps_data.llh.lon);
+  shell_printf(intf, "Altitude      : %ld\r\n", gps_data.llh.alt);
+  shell_printf(intf, "EPH           : %u\r\n", gps_data.eph);
+  shell_printf(intf, "EPV           : %u\r\n", gps_data.epv);
+  shell_printf(intf, "Fix Type      : %s\r\n", gps_fix_type[gps_data.fix_type]);
+  shell_printf(intf, "Ground Speed  : %d\r\n", gps_data.ground_speed);
+  shell_printf(intf, "Ground Course : %d\r\n", gps_data.ground_course);
+  shell_printf(intf, "Velocity North: %d\r\n", gps_data.vel_ned[0]);
+  shell_printf(intf, "Velocity East : %d\r\n", gps_data.vel_ned[1]);
+  shell_printf(intf, "Velocity South: %d\r\n", gps_data.vel_ned[2]);
+  shell_printf(intf, "Num Sat       : %d\r\n", gps_data.num_sat);
+  shell_printf(intf, "HDOP          : %u\r\n", gps_data.hdop);
+  shell_printf(intf, "\r\n");
+  shell_printf(intf, "Year          : %u\r\n", gps_data.time.year);
+  shell_printf(intf, "Month         : %u\r\n", gps_data.time.month);
+  shell_printf(intf, "Day           : %u\r\n", gps_data.time.day);
+  shell_printf(intf, "Hours         : %u\r\n", gps_data.time.hours);
+  shell_printf(intf, "Minutes       : %u\r\n", gps_data.time.minutes);
+  shell_printf(intf, "Seconds       : %u\r\n", gps_data.time.seconds);
+  shell_printf(intf, "Millis        : %u\r\n", gps_data.time.millis);
+  shell_printf(intf, "\r\n");
+  shell_printf(intf, "Heartbeat:%s NE:%s D:%s MAG:%s EPE:%s TIME:%s Receiving:%s\r\n",
+      gps_data.flags.gps_heartbeat ? "T" : "F",
+      gps_data.flags.valid_vel_ne ? "T" : "F",
+      gps_data.flags.valid_vel_d ? "T" : "F",
+      gps_data.flags.valid_mag ? "T" : "F",
+      gps_data.flags.valid_epe ? "T" : "F",
+      gps_data.flags.valid_time ? "T" : "F",
+      gps_data.flags.rx_receiving ? "T" : "F");
 }
 
 static void

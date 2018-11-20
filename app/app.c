@@ -26,11 +26,6 @@ void
 app_init(void)
 {
   config_init();
-
-  __disable_irq();
-  shell_init();
-  __enable_irq();
-
   blinky_init();
   micros_init();
 }
@@ -53,6 +48,10 @@ app_start(void)
   gps_init();
 
   imu_init();
+
+  __disable_irq();
+  shell_init();
+  __enable_irq();
 }
 
 void

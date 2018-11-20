@@ -81,7 +81,7 @@ typedef struct
 {
   ubx_header_t  header;
   ubx_payload_t payload;
-} __attribute__((packed)) ubx_message;
+} __attribute__((packed)) ubx_message_t;
 
 typedef struct
 {
@@ -213,5 +213,15 @@ typedef struct
   uint16_t reserved2;
   uint16_t reserved3;
 } ubx_nav_pvt_t;
+
+enum
+{
+  FIX_NONE = 0,
+  FIX_DEAD_RECKONING = 1,
+  FIX_2D = 2,
+  FIX_3D = 3,
+  FIX_GPS_DEAD_RECKONING = 4,
+  FIX_TIME = 5
+} ubs_nav_fix_t;
 
 #endif /* !__UBLOX_PRIV_DEF_H__ */

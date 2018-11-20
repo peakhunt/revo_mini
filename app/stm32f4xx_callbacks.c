@@ -11,6 +11,7 @@
 #include "usart.h"
 
 #include "ibus.h"
+#include "ublox.h"
 
 volatile uint32_t     __uptime  = 0;
 volatile uint32_t     __msec    = 0;
@@ -46,11 +47,19 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     ibus_rx_callback(huart);
     return;
   }
-  
-  // FIXME
+
+  if(huart == &huart3)
+  {
+    ublox_rx_irq();
+    return;
+  }
 }
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef* huart)
 {
-  // FIXME
+  if(huart == &huart3)
+  {
+    ublox_tx_irq();
+    return;
+  }
 }
