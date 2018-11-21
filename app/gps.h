@@ -16,9 +16,9 @@ typedef struct
 
 typedef struct
 {
-  int32_t     lat;
-  int32_t     lon;
-  int32_t     alt;
+  int32_t     lat;    // latitude * 1e+7
+  int32_t     lon;    // longitude * 1e+7
+  int32_t     alt;    // in cm
 } gps_location_t;
 
 typedef enum
@@ -64,7 +64,6 @@ typedef struct
 
   struct
   {
-    bool      gps_heartbeat;
     bool      valid_vel_ne;
     bool      valid_vel_d;
     bool      valid_mag;

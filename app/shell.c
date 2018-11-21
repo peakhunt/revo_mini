@@ -484,8 +484,8 @@ shell_command_gps(ShellIntf* intf, int argc, const char** argv)
   shell_printf(intf, "CRC Err       : %ld\r\n", gps_data.rx_crc_err);
   shell_printf(intf, "Unsync Err    : %ld\r\n", gps_data.rx_unsync);
   shell_printf(intf, "\r\n");
-  shell_printf(intf, "Lattitude     : %ld\r\n", gps_data.llh.lat);
-  shell_printf(intf, "Longitude     : %ld\r\n", gps_data.llh.lon);
+  shell_printf(intf, "Latitude      : %.04f\r\n", gps_data.llh.lat/1e+7f);
+  shell_printf(intf, "Longitude     : %.04f\r\n", gps_data.llh.lon/1e+7f);
   shell_printf(intf, "Altitude      : %ld\r\n", gps_data.llh.alt);
   shell_printf(intf, "EPH           : %u\r\n", gps_data.eph);
   shell_printf(intf, "EPV           : %u\r\n", gps_data.epv);
@@ -506,8 +506,7 @@ shell_command_gps(ShellIntf* intf, int argc, const char** argv)
   shell_printf(intf, "Seconds       : %u\r\n", gps_data.time.seconds);
   shell_printf(intf, "Millis        : %u\r\n", gps_data.time.millis);
   shell_printf(intf, "\r\n");
-  shell_printf(intf, "Heartbeat:%s NE:%s D:%s MAG:%s EPE:%s TIME:%s Receiving:%s\r\n",
-      gps_data.flags.gps_heartbeat ? "T" : "F",
+  shell_printf(intf, "NE:%s D:%s MAG:%s EPE:%s TIME:%s Receiving:%s\r\n",
       gps_data.flags.valid_vel_ne ? "T" : "F",
       gps_data.flags.valid_vel_d ? "T" : "F",
       gps_data.flags.valid_mag ? "T" : "F",
