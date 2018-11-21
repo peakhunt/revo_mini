@@ -53,9 +53,9 @@ typedef struct
 
   gps_fixtype_t       fix_type;
 
-  int16_t             ground_speed;
-  int16_t             ground_course;
-  int16_t             vel_ned[3];
+  int16_t             ground_speed;   // cm/s
+  int16_t             ground_course;  // deg * 10
+  int16_t             vel_ned[3];     // cm/s
 
   uint8_t             num_sat;
   uint16_t            hdop;
