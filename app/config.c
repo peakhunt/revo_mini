@@ -28,7 +28,27 @@ config_internal_t    _config =
     .gyro_offset[0]     = 0,
     .gyro_offset[1]     = 0,
     .gyro_offset[2]     = 0,
+
     .mag_decl           = 0,
+
+    .roll_kX[0]         = 1.0f,
+    .roll_kX[1]         = 1.0f,
+    .roll_kX[2]         = 1.0f,
+    .pitch_kX[0]        = 1.0f,
+    .pitch_kX[1]        = 1.0f,
+    .pitch_kX[2]        = 1.0f,
+    .yaw_kX[0]          = 1.0f,
+    .yaw_kX[1]          = 1.0f,
+    .yaw_kX[2]          = 1.0f,
+
+    .roll_max           = 200,        // 20 degree
+    .pitch_max          = 200,        // 20 degree
+    .yaw_rate_max       = 100,        // 10 degree per sec
+
+    .motor_min          = 1000,
+    .motor_max          = 2000,
+
+    .min_flight_throttle  = 1150,
   },
   .crc                  = 0,
 };

@@ -13,6 +13,7 @@
 #include "rx.h"
 #include "baro.h"
 #include "gps.h"
+#include "flight.h"
 #include "config.h"
 
 void
@@ -48,6 +49,8 @@ app_start(void)
   gps_init();
 
   imu_init();
+
+  flight_init();
 
   __disable_irq();
   shell_init();

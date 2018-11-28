@@ -1,6 +1,9 @@
 #ifndef __MATH_HELPER_DEF_H__
 #define __MATH_HELPER_DEF_H__
 
+#include "app_common.h"
+#include <math.h>
+
 #define M_PIf       3.14159265358979323846f
 #define M_LN2f      0.69314718055994530942f
 #define M_Ef        2.71828182845904523536f
@@ -30,7 +33,6 @@ typedef struct
   float       z;
 } VectorFloat;
 
-#if 1 // original
 static inline float
 invSqrt(float x)
 {
@@ -45,44 +47,6 @@ invSqrt(float x)
   return y;
 
 }
-#else
-typedef union
-{
-  float   f;
-  long    l;
-} float_long_t;
-
-/*
-static inline float
-invSqrt(float x)
-{
-  float halfx = 0.5f * x;
-  float_long_t    y;  
-  float_long_t    i;
-
-  y.f = x;
-  i = y;
-
-  i.l = 0x5f3759df - (i.l>>1);
-  y = i;
-  y.f = y.f * (1.5f - (halfx * y.f * y.f));
-  y.f = y.f * (1.5f - (halfx * y.f * y.f));
-  return y.f;
-}
-*/
-static inline float
-invSqrt(float x)
-{
-  float halfx = 0.5f * x;
-  float y = x;
-  long i = *(long*)&y;
-  i = 0x5f3759df - (i>>1);
-  y = *(float*)&i;
-  y = y * (1.5f - (halfx * y * y));
-  y = y * (1.5f - (halfx * y * y));
-  return y;
-}
-#endif
 
 static inline bool
 float_zero(float x)
@@ -94,7 +58,7 @@ float_zero(float x)
   return false;
 }
 
-#define sq(x) ((x)*(x))
+#define sq(x)   ((x)*(x))
 
 static inline float
 vector_norm_squared(const float v[3])
@@ -169,6 +133,16 @@ quaternion_rotate_invert(const float q[4], const float org[3], float result[3])
   result[0] = vq[1];
   result[1] = vq[2];
   result[2] = vq[3];
+}
+
+static inline float
+lerp(float x, float x0, float x1, float y0, float y1)
+{
+  float a = (y1 - y0) / (x1 - x0);
+  float b = -a*x0 + y0;
+  float y = a * x + b;
+
+  return y;
 }
 
 #endif //!__MATH_HELPER_DEF_H__

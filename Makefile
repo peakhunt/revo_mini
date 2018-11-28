@@ -104,7 +104,9 @@ app/rx.c \
 app/baro.c \
 app/ms5611.c \
 app/gps.c \
-app/ublox.c
+app/ublox.c \
+app/pid.c \
+app/flight.c
 
 APP_INCLUDES = \
 -Iapp

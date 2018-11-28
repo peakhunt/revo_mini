@@ -19,6 +19,18 @@ typedef struct
   int16_t     accel_offset[3];
   int16_t     gyro_offset[3];
   int16_t     mag_decl;
+
+  float       roll_kX[3];     // KP/KI/KD for roll
+  float       pitch_kX[3];    // KP/KI/KD for pitch
+  float       yaw_kX[3];      // KP/KI/KD for yaw
+
+  int16_t     roll_max;       // max roll angle in decidegree
+  int16_t     pitch_max;      // max pitch angle in decidegree
+  int16_t     yaw_rate_max;   // max yaw rate in decidegree per sec
+
+  uint16_t    motor_min;
+  uint16_t    motor_max;
+  uint16_t    min_flight_throttle;
 } config_t;
 
 typedef struct
