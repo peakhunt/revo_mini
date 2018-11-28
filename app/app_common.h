@@ -34,6 +34,10 @@
 #define Y       1
 #define Z       2
 
+#define ROLL    0
+#define PITCH   1
+#define YAW     2
+
 ////////////////////////////////////////////////////////////////////////////////
 //
 // system uptime. defined in stm32f1xx_callback.c
