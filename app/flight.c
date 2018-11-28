@@ -34,7 +34,7 @@ flight_state_t            flight_state;
 //
 ////////////////////////////////////////////////////////////////////////////////
 static void
-flight_control_update_target(void)
+flight_control_update_command_target(void)
 {
   // roll   1000~2000 ->  +- roll_max
   pid_target[0] = lerp(rx_cmd[RX_CMD_ROLL],  RX_CMD_MIN, RX_CMD_MAX, -GCFG->roll_max, GCFG->roll_max);
@@ -94,7 +94,7 @@ flight_control_update_motor_out(void)
 static void
 flight_control_run(void)
 {
-  flight_control_update_target();
+  flight_control_update_command_target();
 
   pid_out[0] = pid_control_run(&_pidc_roll,   pid_target[0], attitude[0],   1, GCFG->roll_kX);
   pid_out[1] = pid_control_run(&_pidc_pitch,  pid_target[1], attitude[1],   1, GCFG->pitch_kX);
