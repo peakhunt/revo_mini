@@ -30,6 +30,71 @@ flight_state_t            flight_state;
 
 ////////////////////////////////////////////////////////////////////////////////
 //
+// utilities
+//
+////////////////////////////////////////////////////////////////////////////////
+static inline void
+flight_control_set_motor(uint16_t m1, uint16_t m2, uint16_t m3, uint16_t m4)
+{
+  pid_motor[0] = m1;
+  pid_motor[1] = m2;
+  pid_motor[2] = m3;
+  pid_motor[3] = m4;
+
+  //
+  // FIXME
+  // motor mapping
+  //
+  for(int i = 0; i < 4; i++)
+  {
+    pwm_set_duty(i, pid_motor[i]);
+  }
+}
+
+static inline void
+flight_control_set_motor_to_min(void)
+{
+  flight_control_set_motor(
+      GCFG->motor_min,
+      GCFG->motor_min,
+      GCFG->motor_min,
+      GCFG->motor_min);
+}
+
+static inline bool
+flight_is_arming_position(void)
+{
+  static const uint8_t deadband = 20;
+  //
+  // arming/disarming stick
+  //
+  // throttle down
+  // yaw left
+  // roll right
+  // pitch down
+  //
+  if(rx_cmd[RX_CMD_THROTTLE] < (RX_CMD_MIN + deadband) &&
+     rx_cmd[RX_CMD_YAW] < (RX_CMD_MIN + deadband) &&
+     rx_cmd[RX_CMD_PITCH] < (RX_CMD_MIN + deadband) &&
+     rx_cmd[RX_CMD_ROLL] > (RX_CMD_MAX - deadband))
+  {
+    return true;
+  }
+  return false;
+}
+
+static inline void
+flight_reset(void)
+{
+  flight_control_set_motor_to_min();
+
+  pid_control_init(&_pidc_roll);
+  pid_control_init(&_pidc_pitch);
+  pid_control_init(&_pidc_yaw);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//
 // flight core
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -84,11 +149,10 @@ flight_control_update_motor_out(void)
     m[0] = m[1] = m[2] = m[3] = throttle;
   }
 
-  for(int i = 0; i < 4; i++)
-  {
-    pid_motor[i] = (uint16_t)m[i];
-    pwm_set_duty(i, pid_motor[i]);
-  }
+  flight_control_set_motor((uint16_t)m[0],
+      (uint16_t)m[1],
+      (uint16_t)m[2],
+      (uint16_t)m[3]);
 }
 
 static void
@@ -104,9 +168,75 @@ flight_control_run(void)
 }
 
 static void
+flight_control_handle_command(void)
+{
+  static uint32_t       arm_disarm_start_time;
+
+  switch(flight_state)
+  {
+  case flight_state_disarmed:
+    if(flight_is_arming_position())
+    {
+      flight_state = flight_state_arming;
+      arm_disarm_start_time = __msec;
+    }
+    break;
+
+  case flight_state_arming:
+    if(flight_is_arming_position())
+    {
+      if((__msec - arm_disarm_start_time) >= 3000U)
+      {
+        flight_reset();
+        flight_state = flight_state_armed;
+      }
+    }
+    else
+    {
+      flight_state = flight_state_disarmed;
+    }
+    break;
+
+  case flight_state_armed:
+    if(flight_is_arming_position())
+    {
+      flight_state = flight_state_disarming;
+      arm_disarm_start_time = __msec;
+    }
+    break;
+
+  case flight_state_disarming:
+    if(flight_is_arming_position())
+    {
+      if((__msec - arm_disarm_start_time) >= 3000U)
+      {
+        flight_reset();
+        flight_state = flight_state_disarmed;
+      }
+    }
+    else
+    {
+      flight_state = flight_state_disarmed;
+    }
+    break;
+  }
+}
+
+static void
 flight_loop_timer_callback(SoftTimerElem* te)
 {
-  flight_control_run();
+  flight_control_handle_command();
+
+  switch(flight_state)
+  {
+  case flight_state_armed:
+  case flight_state_disarming:    // ???
+    flight_control_run();
+    break;
+
+  default:
+    break;
+  }
 
   mainloop_timer_schedule(&_loop_timer, 1);
 }
@@ -121,9 +251,7 @@ flight_init(void)
 {
   flight_state = flight_state_disarmed;
 
-  pid_control_init(&_pidc_roll);
-  pid_control_init(&_pidc_pitch);
-  pid_control_init(&_pidc_yaw);
+  flight_reset();
 
   soft_timer_init_elem(&_loop_timer);
   _loop_timer.cb    = flight_loop_timer_callback;
