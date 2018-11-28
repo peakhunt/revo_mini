@@ -46,7 +46,7 @@ flight_control_update_target(void)
 }
 
 /*
-   motor setup
+   motor order
 
       M4          M2
      <----\    / --->
@@ -54,9 +54,8 @@ flight_control_update_target(void)
             \/
             /\
            /  \
-          /    \
-      M3          M1
-    ---->        <---
+      M3  /    \  M1
+    ---->/      \<---
 */
 static void
 flight_control_update_motor_out(void)
@@ -76,15 +75,7 @@ flight_control_update_motor_out(void)
 
     for(int i = 0; i < 4; i++)
     {
-      if(m[i] < GCFG->motor_min)
-      {
-        m[i] = GCFG->motor_min;
-      }
-
-      if(m[i] > GCFG->motor_max)
-      {
-        m[i] = GCFG->motor_max;
-      }
+      clamp(&m[i], GCFG->motor_min, GCFG->motor_max);
     }
   }
   else

@@ -145,4 +145,18 @@ lerp(float x, float x0, float x1, float y0, float y1)
   return y;
 }
 
+static inline void
+clamp(float* x, float min, float max)
+{
+  if(*x < min)
+  {
+    *x = min;
+  }
+
+  if(*x > max)
+  {
+    *x = max;
+  }
+}
+
 #endif //!__MATH_HELPER_DEF_H__

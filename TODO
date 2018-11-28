@@ -1,4 +1,5 @@
-b) GPS receiver
-c) SPI flash
-d) advanced magnetometer calibration
-e) PID controller - angle mode
+a) SPI flash
+b) advanced magnetometer calibration
+c) arm/disarm
+d) RX fail-safe
+e) kill switch for emergency
