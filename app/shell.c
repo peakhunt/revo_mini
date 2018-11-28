@@ -19,6 +19,7 @@
 #include "baro.h"
 #include "gps.h"
 #include "config.h"
+#include "flight.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -65,6 +66,8 @@ static void shell_command_rx(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_baro(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_mag_decl(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_gps(ShellIntf* intf, int argc, const char** argv);
+static void shell_command_flight(ShellIntf* intf, int argc, const char** argv);
+static void shell_command_pid(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_save(ShellIntf* intf, int argc, const char** argv);
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -180,6 +183,16 @@ static ShellCommand     _commands[] =
     "gps",
     "show gps status",
     shell_command_gps,
+  },
+  {
+    "flight",
+    "show pid status",
+    shell_command_flight,
+  },
+  {
+    "pid",
+    "show/config PID",
+    shell_command_pid,
   },
   {
     "save",
@@ -513,6 +526,97 @@ shell_command_gps(ShellIntf* intf, int argc, const char** argv)
       gps_data.flags.valid_epe ? "T" : "F",
       gps_data.flags.valid_time ? "T" : "F",
       gps_data.flags.rx_receiving ? "T" : "F");
+}
+
+static void
+shell_command_flight(ShellIntf* intf, int argc, const char** argv)
+{
+  static const char*  flight_state_str[] = 
+  {
+    "disarmbed",
+    "arming",
+    "armed",
+    "disarming",
+  };
+
+  shell_printf(intf, "\r\n");
+  shell_printf(intf, "Target Roll     : %.2f\r\n", pid_target[0]);
+  shell_printf(intf, "Target Pitch    : %.2f\r\n", pid_target[1]);
+  shell_printf(intf, "Target Yaw      : %.2f\r\n", pid_target[2]);
+  shell_printf(intf, "\r\n");
+  shell_printf(intf, "Out Roll        : %.2f\r\n", pid_out[0]);
+  shell_printf(intf, "Out Pitch       : %.2f\r\n", pid_out[1]);
+  shell_printf(intf, "Out Yaw         : %.2f\r\n", pid_out[2]);
+  shell_printf(intf, "\r\n");
+  for(int i = 0; i < 4; i++)
+  {
+    shell_printf(intf, "Motor-%d        : %u\r\n", i + 1, pid_motor[i]);
+  }
+  shell_printf(intf, "\r\n");
+  shell_printf(intf, "Flight State    : %s\r\n", flight_state_str[flight_state]);
+}
+
+static void
+shell_command_pid(ShellIntf* intf, int argc, const char** argv)
+{
+  float     p, i, d;
+  float     *t;
+
+  shell_printf(intf, "\r\n");
+
+  if(argc == 1)
+  {
+    // show
+    shell_printf(intf, "PID Roll Kp   : %.2f\r\n", GCFG->roll_kX[0]);
+    shell_printf(intf, "PID Roll Ki   : %.2f\r\n", GCFG->roll_kX[1]);
+    shell_printf(intf, "PID Roll Kd   : %.2f\r\n", GCFG->roll_kX[2]);
+
+    shell_printf(intf, "PID Pitch Kp  : %.2f\r\n", GCFG->pitch_kX[0]);
+    shell_printf(intf, "PID Pitch Ki  : %.2f\r\n", GCFG->pitch_kX[1]);
+    shell_printf(intf, "PID Pitch Kd  : %.2f\r\n", GCFG->pitch_kX[2]);
+
+    shell_printf(intf, "PID Yaw Kp    : %.2f\r\n", GCFG->yaw_kX[0]);
+    shell_printf(intf, "PID Yaw Ki    : %.2f\r\n", GCFG->yaw_kX[1]);
+    shell_printf(intf, "PID Yaw Kd    : %.2f\r\n", GCFG->yaw_kX[2]);
+    return;
+  }
+
+  if(argc != 5)
+  {
+    goto invalid_command;
+  }
+
+  p = atof(argv[2]);
+  i = atof(argv[3]);
+  d = atof(argv[4]);
+
+  if(strcmp(argv[1], "roll") == 0)
+  {
+    t = GCFG->roll_kX;
+  }
+  else if(strcmp(argv[1], "pitch") == 0)
+  {
+    t = GCFG->pitch_kX;;
+  }
+  else if(strcmp(argv[1], "yaw") == 0)
+  {
+    t = GCFG->yaw_kX;;
+  }
+  else
+  {
+    goto invalid_command;
+  }
+
+  t[0] = p;
+  t[1] = i;
+  t[2] = d;
+
+  shell_printf(intf, "Set PID for %s to %.2f %.2f %.2f\r\n", argv[1], p, i, d);
+  return;
+
+invalid_command:
+  shell_printf(intf, "Invalid Command\r\n");
+  shell_printf(intf, "pid [roll|pitch|yaw] <p> <i> <d>\r\n");
 }
 
 static void

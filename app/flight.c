@@ -26,6 +26,7 @@ static SoftTimerElem      _loop_timer;
 float                     pid_out[3];
 float                     pid_target[3];        // RP - deci degree. Y - dps
 uint16_t                  pid_motor[4];
+flight_state_t            flight_state;
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -118,6 +119,8 @@ flight_loop_timer_callback(SoftTimerElem* te)
 void
 flight_init(void)
 {
+  flight_state = flight_state_disarmed;
+
   pid_control_init(&_pidc_roll);
   pid_control_init(&_pidc_pitch);
   pid_control_init(&_pidc_yaw);
