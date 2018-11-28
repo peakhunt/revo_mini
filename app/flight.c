@@ -96,7 +96,7 @@ flight_control_run(void)
 {
   flight_control_update_target();
 
-  pid_out[0] = pid_control_run(&_pidc_roll,   pid_target[0], attitude[1],   1, GCFG->roll_kX);
+  pid_out[0] = pid_control_run(&_pidc_roll,   pid_target[0], attitude[0],   1, GCFG->roll_kX);
   pid_out[1] = pid_control_run(&_pidc_pitch,  pid_target[1], attitude[1],   1, GCFG->pitch_kX);
   pid_out[2] = pid_control_run(&_pidc_yaw,    pid_target[2], gyro_body[2],  1, GCFG->yaw_kX);
 
