@@ -239,7 +239,7 @@ flight_control_handle_command(void)
     }
     else
     {
-      flight_state = flight_state_disarmed;
+      flight_state = flight_state_armed;
     }
     break;
   }
@@ -280,4 +280,18 @@ flight_init(void)
   _loop_timer.cb    = flight_loop_timer_callback;
 
   mainloop_timer_schedule(&_loop_timer, 1);
+}
+
+void
+flight_arm(void)
+{
+  flight_reset();
+  flight_state = flight_state_armed;
+}
+
+void
+flight_disarm(void)
+{
+  flight_reset();
+  flight_state = flight_state_disarmed;
 }

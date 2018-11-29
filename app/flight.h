@@ -12,6 +12,8 @@ typedef enum
 } flight_state_t;
 
 extern void flight_init(void);
+extern void flight_arm(void);
+extern void flight_disarm(void);
 
 extern float pid_out[3];
 extern float pid_target[3];

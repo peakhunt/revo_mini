@@ -71,6 +71,7 @@ static void shell_command_gps(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_flight(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_pid(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_motor(ShellIntf* intf, int argc, const char** argv);
+static void shell_command_arm_disarm(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_save(ShellIntf* intf, int argc, const char** argv);
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -236,6 +237,16 @@ static ShellCommand     _commands[] =
     "motor",
     "show/config motor index",
     shell_command_motor,
+  },
+  {
+    "arm",
+    "arm flight controller",
+    shell_command_arm_disarm,
+  },
+  {
+    "disarm",
+    "disarm flight controller",
+    shell_command_arm_disarm,
   },
   {
     "save",
@@ -480,7 +491,7 @@ shell_command_rx(ShellIntf* intf, int argc, const char** argv)
 
   for(int i = 0; i < RX_MAX_CHANNELS; i++)
   {
-    shell_printf(intf, "%10s, ndx %02d : %u\r\n",
+    shell_printf(intf, "%-10s index %02d : %u\r\n",
         rx_cmd_names[i],
         GCFG->rx_cmd_ndx[i],
         rx_cmd_get(i));
@@ -720,7 +731,7 @@ shell_command_motor(ShellIntf* intf, int argc, const char** argv)
   {
     for(int i = 0; i < MOTOR_MAX_NUM; i++)
     {
-      shell_printf(intf, "%10s : %u\r\n", motor_names[i], GCFG->motor_ndx[i]);
+      shell_printf(intf, "%-10s : %u\r\n", motor_names[i], GCFG->motor_ndx[i]);
     }
     return;
   }
@@ -757,6 +768,19 @@ shell_command_motor(ShellIntf* intf, int argc, const char** argv)
 invalid_command:
   shell_printf(intf, "Invalid Command\r\n");
   shell_printf(intf, "motor [motor-name] <ndx 0-5>\r\n");
+}
+
+static void
+shell_command_arm_disarm(ShellIntf* intf, int argc, const char** argv)
+{
+  if(strcmp(argv[0], "arm") == 0)
+  {
+    flight_arm();
+  }
+  else
+  {
+    flight_disarm();
+  }
 }
 
 static void
