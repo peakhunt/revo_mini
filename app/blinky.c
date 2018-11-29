@@ -5,35 +5,64 @@
 #include "blinky.h"
 #include "mainloop_timer.h"
 
-#define BLINKY1_INTERVAL         50
-#define BLINKY2_INTERVAL         100
+#define GREEN_LED_PORT          GPIOB
+#define GREEN_LED_PIN           GPIO_PIN_4
 
-static SoftTimerElem    _blinky_timer1;
-static SoftTimerElem    _blinky_timer2;
+#define RED_LED_PORT            GPIOB
+#define RED_LED_PIN             GPIO_PIN_5
 
-static void
-blinky_callback1(SoftTimerElem* te)
+static SoftTimerElem            _blinky_green_timer;
+static blinky_green_state_t     _green_state;
+
+static inline void
+blinky_green_timer_do_state_change(void)
 {
-  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_4);
-  mainloop_timer_schedule(&_blinky_timer1, BLINKY1_INTERVAL);
+  switch(_green_state)
+  {
+  case blinky_green_state_disarmed_not_ready:
+    mainloop_timer_schedule(&_blinky_green_timer, BLINKY_GREEN_SLOW_BLINK_PERIOD);
+    break;
+
+  case blinky_green_state_armed:
+    mainloop_timer_schedule(&_blinky_green_timer, BLINKY_GREEN_FAST_BLINK_PERIOD);
+    break;
+
+  case blinky_green_state_disarmed_ready:
+    HAL_GPIO_WritePin(GREEN_LED_PORT, GREEN_LED_PIN, GPIO_PIN_RESET);
+    break;
+  }
 }
 
 static void
-blinky_callback2(SoftTimerElem* te)
+blinky_green_timer_callback(SoftTimerElem* te)
 {
-  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
-  mainloop_timer_schedule(&_blinky_timer2, BLINKY2_INTERVAL);
+  HAL_GPIO_TogglePin(GREEN_LED_PORT, GREEN_LED_PIN);
+
+  blinky_green_timer_do_state_change();
 }
 
 void
 blinky_init(void)
 {
-  soft_timer_init_elem(&_blinky_timer1);
-  _blinky_timer1.cb    = blinky_callback1;
+  soft_timer_init_elem(&_blinky_green_timer);
+  _blinky_green_timer.cb    = blinky_green_timer_callback;
 
-  soft_timer_init_elem(&_blinky_timer2);
-  _blinky_timer2.cb    = blinky_callback2;
+  _green_state = blinky_green_state_disarmed_not_ready;
+  blinky_green_timer_do_state_change();
 
-  mainloop_timer_schedule(&_blinky_timer1, BLINKY1_INTERVAL);
-  mainloop_timer_schedule(&_blinky_timer2, BLINKY2_INTERVAL);
+  HAL_GPIO_WritePin(RED_LED_PORT, RED_LED_PIN, GPIO_PIN_SET);
+}
+
+void
+blinky_change_state(blinky_green_state_t new_state)
+{
+  if(new_state == _green_state)
+  {
+    return;
+  }
+
+  mainloop_timer_cancel(&_blinky_green_timer);
+
+  _green_state = new_state;
+  blinky_green_timer_do_state_change();
 }

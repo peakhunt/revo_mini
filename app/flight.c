@@ -6,6 +6,7 @@
 #include "motor.h"
 #include "config.h"
 #include "math_helper.h"
+#include "blinky.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -58,7 +59,7 @@ flight_control_set_motor_to_min(void)
 }
 
 static inline bool
-flight_is_arming_position(void)
+flight_is_rx_cmd_arming_position(void)
 {
   static const uint8_t deadband = 20;
   //
@@ -77,6 +78,21 @@ flight_is_arming_position(void)
     return true;
   }
   return false;
+}
+
+static inline bool
+flight_is_arming_ready(void)
+{
+  // roll/pitch should be within +- 10 degree
+  if(attitude[0] < -100 ||
+     attitude[0] >  100 ||
+     attitude[1] < -100 ||
+     attitude[1] >  100)
+  {
+    return false;
+  }
+
+  return true;
 }
 
 static inline void
@@ -171,15 +187,24 @@ flight_control_handle_command(void)
   switch(flight_state)
   {
   case flight_state_disarmed:
-    if(flight_is_arming_position())
+    if(flight_is_arming_ready())
     {
-      flight_state = flight_state_arming;
-      arm_disarm_start_time = __msec;
+      blinky_change_state(blinky_green_state_disarmed_ready);
+
+      if(flight_is_rx_cmd_arming_position())
+      {
+        flight_state = flight_state_arming;
+        arm_disarm_start_time = __msec;
+      }
+    }
+    else
+    {
+      blinky_change_state(blinky_green_state_disarmed_not_ready);
     }
     break;
 
   case flight_state_arming:
-    if(flight_is_arming_position())
+    if(flight_is_arming_ready() && flight_is_rx_cmd_arming_position())
     {
       if((__msec - arm_disarm_start_time) >= 3000U)
       {
@@ -194,7 +219,9 @@ flight_control_handle_command(void)
     break;
 
   case flight_state_armed:
-    if(flight_is_arming_position())
+    blinky_change_state(blinky_green_state_armed);
+
+    if(flight_is_rx_cmd_arming_position())
     {
       flight_state = flight_state_disarming;
       arm_disarm_start_time = __msec;
@@ -202,7 +229,7 @@ flight_control_handle_command(void)
     break;
 
   case flight_state_disarming:
-    if(flight_is_arming_position())
+    if(flight_is_rx_cmd_arming_position())
     {
       if((__msec - arm_disarm_start_time) >= 3000U)
       {
