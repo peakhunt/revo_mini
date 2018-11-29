@@ -63,6 +63,7 @@ static void shell_command_accel(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_attitude(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_cal_show(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_rx(ShellIntf* intf, int argc, const char** argv);
+static void shell_command_rx_map(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_baro(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_mag_decl(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_gps(ShellIntf* intf, int argc, const char** argv);
@@ -79,6 +80,26 @@ const uint8_t                 _welcome[] = "\r\n**** Welcome ****\r\n";
 const uint8_t                 _prompt[]  = "\r\nSTM32F4> ";
 
 static char                   _print_buffer[SHELL_MAX_COLUMNS_PER_LINE + 1];
+
+static const char* rx_cmd_names[RX_MAX_CHANNELS] =
+{
+  "roll",
+  "pitch",
+  "yaw",
+  "throttle",
+  "aux1",
+  "aux2",
+  "aux3",
+  "aux4",
+  "aux5",
+  "aux6",
+  "aux7",
+  "aux8",
+  "aux9",
+  "aux10",
+  "aux11",
+  "aux12",
+};
 
 static LIST_HEAD_DECL(_shell_intf_list);
 
@@ -168,6 +189,11 @@ static ShellCommand     _commands[] =
     "rx",
     "show rx command status",
     shell_command_rx,
+  },
+  {
+    "rx_map",
+    "map rx channells",
+    shell_command_rx_map,
   },
   {
     "baro",
@@ -434,15 +460,62 @@ shell_command_rx(ShellIntf* intf, int argc, const char** argv)
 {
   shell_printf(intf, "\r\n");
   shell_printf(intf, "Status     : %s\r\n", rx_status() == true ? "OK" : "FAIL");
+
   for(int i = 0; i < RX_MAX_CHANNELS; i++)
   {
-    shell_printf(intf, "RX-%02d    : %u\r\n", i, rx_cmd[i]);
+    shell_printf(intf, "%10s, ndx %02d : %u\r\n",
+        rx_cmd_names[i],
+        GCFG->rx_cmd_ndx[i],
+        rx_cmd_get(i));
   }
 
   shell_printf(intf, "rx_count   : %lu\r\n", rx_count);
   shell_printf(intf, "rx_timeout : %lu\r\n", rx_timeout);
   shell_printf(intf, "rx_sync_err: %lu\r\n", rx_sync_err);
   shell_printf(intf, "rx_crc_err : %lu\r\n", rx_crc_err);
+}
+
+static void
+shell_command_rx_map(ShellIntf* intf, int argc, const char** argv)
+{
+  rx_cmd_ndx_t      cmd_ndx = RX_MAX_CHANNELS;
+  uint8_t           ndx;
+
+  shell_printf(intf, "\r\n");
+
+  if(argc != 3)
+  {
+    goto invalid_command;
+  }
+
+  for(int i = 0; i < RX_MAX_CHANNELS; i++)
+  {
+    if(strcmp(rx_cmd_names[i], argv[1]) == 0)
+    {
+      cmd_ndx = i;
+      break;
+    }
+  }
+
+  if(cmd_ndx >= RX_MAX_CHANNELS)
+  {
+    goto invalid_command;
+  }
+
+  ndx = (uint8_t)atoi(argv[2]);
+  if(ndx >= RX_MAX_CHANNELS)
+  {
+    goto invalid_command;
+  }
+
+  GCFG->rx_cmd_ndx[cmd_ndx] = ndx;
+
+  shell_printf(intf, "Set %s to index %u\r\n", rx_cmd_names[cmd_ndx], ndx);
+  return;
+
+invalid_command:
+  shell_printf(intf, "Invalid Command\r\n");
+  shell_printf(intf, "rx_map [channel-name] <ndx>\r\n");
 }
 
 static void

@@ -49,6 +49,23 @@ config_internal_t    _config =
     .motor_max          = 2000,
 
     .min_flight_throttle  = 1150,
+    
+    .rx_cmd_ndx[RX_CMD_ROLL]        = 0,
+    .rx_cmd_ndx[RX_CMD_PITCH]       = 1,
+    .rx_cmd_ndx[RX_CMD_YAW]         = 2,
+    .rx_cmd_ndx[RX_CMD_THROTTLE]    = 3,
+    .rx_cmd_ndx[RX_CMD_AUX1]        = 4,
+    .rx_cmd_ndx[RX_CMD_AUX2]        = 5,
+    .rx_cmd_ndx[RX_CMD_AUX3]        = 6,
+    .rx_cmd_ndx[RX_CMD_AUX4]        = 7,
+    .rx_cmd_ndx[RX_CMD_AUX5]        = 8,
+    .rx_cmd_ndx[RX_CMD_AUX6]        = 9,
+    .rx_cmd_ndx[RX_CMD_AUX7]        = 10,
+    .rx_cmd_ndx[RX_CMD_AUX8]        = 11,
+    .rx_cmd_ndx[RX_CMD_AUX9]        = 12,
+    .rx_cmd_ndx[RX_CMD_AUX10]       = 13,
+    .rx_cmd_ndx[RX_CMD_AUX11]       = 14,
+    .rx_cmd_ndx[RX_CMD_AUX12]       = 15,
   },
   .crc                  = 0,
 };

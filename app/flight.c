@@ -73,10 +73,10 @@ flight_is_arming_position(void)
   // roll right
   // pitch down
   //
-  if(rx_cmd[RX_CMD_THROTTLE] < (RX_CMD_MIN + deadband) &&
-     rx_cmd[RX_CMD_YAW] < (RX_CMD_MIN + deadband) &&
-     rx_cmd[RX_CMD_PITCH] < (RX_CMD_MIN + deadband) &&
-     rx_cmd[RX_CMD_ROLL] > (RX_CMD_MAX - deadband))
+  if(rx_cmd_get(RX_CMD_THROTTLE) < (RX_CMD_MIN + deadband) &&
+     rx_cmd_get(RX_CMD_YAW) < (RX_CMD_MIN + deadband) &&
+     rx_cmd_get(RX_CMD_PITCH) < (RX_CMD_MIN + deadband) &&
+     rx_cmd_get(RX_CMD_ROLL) > (RX_CMD_MAX - deadband))
   {
     return true;
   }
@@ -102,13 +102,13 @@ static void
 flight_control_update_command_target(void)
 {
   // roll   1000~2000 ->  +- roll_max
-  pid_target[0] = lerp(rx_cmd[RX_CMD_ROLL],  RX_CMD_MIN, RX_CMD_MAX, -GCFG->roll_max, GCFG->roll_max);
+  pid_target[0] = lerp(rx_cmd_get(RX_CMD_ROLL),  RX_CMD_MIN, RX_CMD_MAX, -GCFG->roll_max, GCFG->roll_max);
 
   // pitch  1000-2000 ->  +- pitch_max
-  pid_target[1] = lerp(rx_cmd[RX_CMD_PITCH], RX_CMD_MIN, RX_CMD_MAX, -GCFG->pitch_max, GCFG->pitch_max);
+  pid_target[1] = lerp(rx_cmd_get(RX_CMD_PITCH), RX_CMD_MIN, RX_CMD_MAX, -GCFG->pitch_max, GCFG->pitch_max);
 
   // yaw    1000-2000 ->  +- yaw_rate_max
-  pid_target[2] = lerp(rx_cmd[RX_CMD_YAW], RX_CMD_MIN, RX_CMD_MAX, -GCFG->yaw_rate_max, GCFG->yaw_rate_max);
+  pid_target[2] = lerp(rx_cmd_get(RX_CMD_YAW), RX_CMD_MIN, RX_CMD_MAX, -GCFG->yaw_rate_max, GCFG->yaw_rate_max);
 }
 
 /*
@@ -127,7 +127,7 @@ static void
 flight_control_update_motor_out(void)
 {
   float   m[4];
-  float   throttle  = rx_cmd[RX_CMD_THROTTLE],
+  float   throttle  = rx_cmd_get(RX_CMD_THROTTLE),
           roll      = pid_out[0],
           pitch     = pid_out[1],
           yaw       = pid_out[2];
