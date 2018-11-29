@@ -106,7 +106,8 @@ app/ms5611.c \
 app/gps.c \
 app/ublox.c \
 app/pid.c \
-app/flight.c
+app/flight.c \
+app/motor.c
 
 APP_INCLUDES = \
 -Iapp

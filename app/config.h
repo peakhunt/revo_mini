@@ -3,6 +3,7 @@
 
 #include "app_common.h"
 #include "rx.h"
+#include "motor.h"
 
 #define CONFIG_VERSION          1
 #define CONFIG_MAGIC            0x63149654
@@ -34,6 +35,7 @@ typedef struct
   uint16_t    min_flight_throttle;
 
   uint8_t     rx_cmd_ndx[RX_MAX_CHANNELS];
+  uint8_t     motor_ndx[MOTOR_MAX_NUM];
 } config_t;
 
 typedef struct

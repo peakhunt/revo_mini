@@ -5,7 +5,7 @@
 #include "shell.h"
 #include "mainloop_timer.h"
 #include "blinky.h"
-#include "pwm.h"
+#include "motor.h"
 #include "accelgyro.h"
 #include "magneto.h"
 #include "micros.h"
@@ -34,7 +34,7 @@ app_init(void)
 void
 app_start(void)
 {
-  pwm_start();
+  motor_init();
 
   accelgyro_init(sensor_align_cw_180, sensor_align_cw_180);
   accelgyro_start();

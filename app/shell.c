@@ -20,6 +20,7 @@
 #include "gps.h"
 #include "config.h"
 #include "flight.h"
+#include "motor.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -69,6 +70,7 @@ static void shell_command_mag_decl(ShellIntf* intf, int argc, const char** argv)
 static void shell_command_gps(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_flight(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_pid(ShellIntf* intf, int argc, const char** argv);
+static void shell_command_motor(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_save(ShellIntf* intf, int argc, const char** argv);
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -99,6 +101,16 @@ static const char* rx_cmd_names[RX_MAX_CHANNELS] =
   "aux10",
   "aux11",
   "aux12",
+};
+
+static const char* motor_names[MOTOR_MAX_NUM] = 
+{
+  "m1",
+  "m2",
+  "m3",
+  "m4",
+  "m5",
+  "m6",
 };
 
 static LIST_HEAD_DECL(_shell_intf_list);
@@ -219,6 +231,11 @@ static ShellCommand     _commands[] =
     "pid",
     "show/config PID",
     shell_command_pid,
+  },
+  {
+    "motor",
+    "show/config motor index",
+    shell_command_motor,
   },
   {
     "save",
@@ -690,6 +707,56 @@ shell_command_pid(ShellIntf* intf, int argc, const char** argv)
 invalid_command:
   shell_printf(intf, "Invalid Command\r\n");
   shell_printf(intf, "pid [roll|pitch|yaw] <p> <i> <d>\r\n");
+}
+
+static void
+shell_command_motor(ShellIntf* intf, int argc, const char** argv)
+{
+  shell_printf(intf, "\r\n");
+  motor_ndx_t       mndx = MOTOR_MAX_NUM;
+  uint8_t           ndx;
+
+  if(argc == 1)
+  {
+    for(int i = 0; i < MOTOR_MAX_NUM; i++)
+    {
+      shell_printf(intf, "%10s : %u\r\n", motor_names[i], GCFG->motor_ndx[i]);
+    }
+    return;
+  }
+
+  if(argc != 3)
+  {
+    goto invalid_command;
+  }
+
+  for(int i = 0; i < MOTOR_MAX_NUM; i++)
+  {
+    if(strcmp(motor_names[i], argv[1]) == 0)
+    {
+      mndx = i;
+      break;
+    }
+  }
+
+  if(mndx >= MOTOR_MAX_NUM)
+  {
+    goto invalid_command;
+  }
+
+  ndx = (uint8_t)atoi(argv[2]);
+  if(ndx >= MOTOR_MAX_NUM)
+  {
+    goto invalid_command;
+  }
+
+  GCFG->motor_ndx[mndx] = ndx;
+  shell_printf(intf, "Set %s to index %u\r\n", motor_names[mndx], ndx);
+  return;
+
+invalid_command:
+  shell_printf(intf, "Invalid Command\r\n");
+  shell_printf(intf, "motor [motor-name] <ndx 0-5>\r\n");
 }
 
 static void

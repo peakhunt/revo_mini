@@ -3,7 +3,7 @@
 #include "mainloop_timer.h"
 #include "imu.h"
 #include "rx.h"
-#include "pwm.h"
+#include "motor.h"
 #include "config.h"
 #include "math_helper.h"
 
@@ -41,14 +41,10 @@ flight_control_set_motor(uint16_t m1, uint16_t m2, uint16_t m3, uint16_t m4)
   pid_motor[2] = m3;
   pid_motor[3] = m4;
 
-  //
-  // FIXME
-  // motor mapping
-  //
-  for(int i = 0; i < 4; i++)
-  {
-    pwm_set_duty(i, pid_motor[i]);
-  }
+  motor_set(motor_1, pid_motor[0]);
+  motor_set(motor_2, pid_motor[1]);
+  motor_set(motor_3, pid_motor[2]);
+  motor_set(motor_4, pid_motor[3]);
 }
 
 static inline void

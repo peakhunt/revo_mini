@@ -66,6 +66,13 @@ config_internal_t    _config =
     .rx_cmd_ndx[RX_CMD_AUX10]       = 13,
     .rx_cmd_ndx[RX_CMD_AUX11]       = 14,
     .rx_cmd_ndx[RX_CMD_AUX12]       = 15,
+
+    .motor_ndx[motor_1]   = 0,
+    .motor_ndx[motor_2]   = 1,
+    .motor_ndx[motor_3]   = 2,
+    .motor_ndx[motor_4]   = 3,
+    .motor_ndx[motor_5]   = 4,
+    .motor_ndx[motor_6]   = 5,
   },
   .crc                  = 0,
 };
