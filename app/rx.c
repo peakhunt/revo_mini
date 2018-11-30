@@ -14,6 +14,16 @@ static ibus_t       _ibus;
 void
 rx_init(void)
 {
+  _rx_cmd[RX_CMD_ROLL] = RX_CMD_MIN + (RX_CMD_MIN + RX_CMD_MAX) / 2;
+  _rx_cmd[RX_CMD_PITCH] = RX_CMD_MIN + (RX_CMD_MIN + RX_CMD_MAX) / 2;
+  _rx_cmd[RX_CMD_YAW] = RX_CMD_MIN + (RX_CMD_MIN + RX_CMD_MAX) / 2;
+  _rx_cmd[RX_CMD_THROTTLE] = RX_CMD_MIN;
+
+  for(int i = RX_CMD_AUX1; i < RX_MAX_CHANNELS; i++)
+  {
+    _rx_cmd[i] = RX_CMD_MIN;
+  }
+
   ibus_init(&_ibus, _rx_cmd);
 }
 
